@@ -2,7 +2,7 @@
 
 _Update this every session. Single source of truth for "where are we."_
 
-- **Current phase:** Phase 2 — P0 RTL + lockstep (in progress). Phases 0–1 complete.
+- **Current phase:** Phase 3 — DV closure (next). Phases 0–2 complete.
 - **Branch:** `claude/inspiring-allen-bw0cx`
 - **Last updated:** 2026-06-07
 - **Target shuttle:** Tiny Tapeout TTSKY26c (sky130A), submission deadline 2026-09-07
@@ -26,11 +26,17 @@ _Update this every session. Single source of truth for "where are we."_
 - MNIST 8×8 (sklearn digits, offline): **float 97.33% / INT8 96.67%** (frozen weights committed).
 - Descriptor format (§4), host tiling protocol (§5), pin map (§8) defined.
 
+## Phase 2 results
+- RTL (parametric, lint-clean -Wall): `tt_pe`, `tt_mac_array` (systolic, row-skew, psum-down),
+  `tt_requant` (SPEC §2), `tt_fifo` (FWFT), `tensortile_core` (FSM + K-accum buffer + bias + requant).
+- cocotb lockstep vs NumPy model — **4/4 benches pass** (array, requant, fifo, core); core covers
+  single-tile, K-tiling, bias, ReLU, and 25 random shapes — all bit-exact. `make sim` runs them.
+
 ## Phase ladder
 - [x] **Phase 0 — Scaffold** (smoke green local+CI, committed d5d6b7e)
 - [x] **Phase 1 — Spec + golden model + MNIST** (26/26 tests; INT8 96.67%)
-- [ ] Phase 2 — P0 RTL + lockstep (PE→row→array→control)  ← in progress
-- [ ] Phase 3 — DV closure on P0 (≥1M MACs, ≥95% func cov)
+- [x] **Phase 2 — P0 RTL + lockstep** (PE→array→requant/fifo→core; 4/4 benches bit-exact)
+- [ ] Phase 3 — DV closure on P0 (≥1M MACs, ≥95% func cov)  ← next
 - [ ] Phase 4 — Formal (FIFO/FSM/descq/accumulator)
 - [ ] Phase 5 — P1 features (ping-pong, desc queue, bias, counters, MNIST demo)
 - [ ] Phase 6 — DFT (scan + ATPG ≥95%)

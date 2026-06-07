@@ -1,0 +1,7 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1780866863" />
+    <testcase name="test_requant_spec_examples" classname="tb_requant" file="/home/user/tpu/dv/cocotb/tb_requant.py" lineno="34" time="0.001470327377319336" sim_time_ns="14.0" ratio_time="9521.688989784336" />
+    <testcase name="test_requant_random_vs_model" classname="tb_requant" file="/home/user/tpu/dv/cocotb/tb_requant.py" lineno="58" time="0.1801462173461914" sim_time_ns="2000.0" ratio_time="11102.092674843963" />
+  </testsuite>
+</testsuites>

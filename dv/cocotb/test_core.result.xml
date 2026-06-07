@@ -1,0 +1,9 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1780866865" />
+    <testcase name="test_core_single_tile" classname="tb_core" file="/home/user/tpu/dv/cocotb/tb_core.py" lineno="128" time="0.02098393440246582" sim_time_ns="910.0" ratio_time="43366.50994739414" />
+    <testcase name="test_core_ktiling" classname="tb_core" file="/home/user/tpu/dv/cocotb/tb_core.py" lineno="140" time="0.011900186538696289" sim_time_ns="1060.0" ratio_time="89074.23396710276" />
+    <testcase name="test_core_bias_relu" classname="tb_core" file="/home/user/tpu/dv/cocotb/tb_core.py" lineno="154" time="0.011227846145629883" sim_time_ns="980.0" ratio_time="87282.99152740322" />
+    <testcase name="test_core_random" classname="tb_core" file="/home/user/tpu/dv/cocotb/tb_core.py" lineno="168" time="0.12016034126281738" sim_time_ns="10800.0" ratio_time="89879.90452172568" />
+  </testsuite>
+</testsuites>

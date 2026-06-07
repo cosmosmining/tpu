@@ -19,3 +19,7 @@ jobs:
         run: make setup
       - name: Smoke (Phase 0 gate)
         run: make smoke
+      - name: Model unit tests (Phase 1)
+        run: PYTHONPATH=. python3 -m pytest model -q
+      - name: RTL lockstep benches (Phase 2)
+        run: make sim

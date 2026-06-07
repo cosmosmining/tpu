@@ -90,3 +90,35 @@ once, succeeded on retry.)
 `ui_in[2:0]`; MISO/IRQ/busy/done on `uo_out[3:0]`; `uio` reserved (inputs, `uio_oe=0`) in P0,
 reserved for scan muxing under `test_en` in Phase 6. Normally a "stop and ask" item, but the
 operator directed proceeding through phases; pinout chosen conventionally and logged here.
+
+## 2026-06-07 — Phase 2 P0 RTL + lockstep
+
+**[arch] Systolic dataflow = activation-broadcast-per-row + registered partial sums down columns,
+with per-row input skew (lane k delayed k cycles).** This is a legitimate weight-stationary
+systolic array faithful to SPEC §3 (weights stationary in PEs, row skew, psum flows down,
+1 result column/cycle after an ARRAY_N fill latency). Activations are broadcast across the columns
+within a row (fanout ARRAY_N=4, small) rather than flowing horizontally register-by-register —
+this keeps the design compact and easy to verify while preserving the architecture and the exact
+arithmetic. Verified bit-exact vs `gemm_ref` (tb_array: single-tile + backpressure).
+
+**[arch] Weight mapping `wmem[k][c] = W[c][k]` (array stores W transposed).** Contraction index k
+on array rows, output index c on array columns, so column c's bottom accumulator yields
+`sum_k W[c,k]*a[k]`. Documented in `tt_mac_array.v` and the host tiling protocol.
+
+**[arch] K-accumulation via an `ACC[ARRAY_N][MAX_COLS]` buffer; `MAX_COLS` parameter (default 8).**
+The host re-streams the same activation columns per K-tile (reloading weights each K-tile); the
+core accumulates per-(row,col). `num_cols ≤ MAX_COLS`; larger M is host-tiled. MNIST inference is
+M=1 (matrix-vector), so this bound is comfortable; it caps accumulator flops for area. Faithful to
+the no-SRAM, flops-only constraint. Bit-exact vs `quant_gemm`/`quant_gemm_ktiled` (tb_core).
+
+**[arch] `w_req` weight-request handshake.** Core raises `w_req` in S_LOADW; the host supplies the
+K-tile's weights (parallel `w_load`/`w_flat`; shift-chain serialization is a wrapper concern).
+Clean host/core sync without exposing internal state.
+
+**[dv] cocotb 2.0.x runner flow.** `cocotb_tools.runner.get_runner` + Icarus; `Clock(..., unit=)`;
+`timescale=("1ns","1ps")` required (else Icarus 1s precision rejects a 10ns clock). Benches use
+the ReadOnly-sample → drive → edge pattern; `make sim` runs all four levels. Bench protocol note:
+wait for `busy==0` before issuing `start` (the core needs 1-2 cycles to return to IDLE after DONE).
+
+**[dv] No `row` level module.** The array composes PEs directly per SPEC §3; a separate `row.v`
+added no verification value over the PE + array benches, so the ladder is PE → array → core.

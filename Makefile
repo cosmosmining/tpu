@@ -28,7 +28,9 @@ smoke: ## PHASE-0 GATE: env + known-answer matmul + compile top stub
 lint: ## verilator --lint-only -Wall (+ verible if present); zero errors required
 	@echo ">> lint"
 	@if command -v $(VERILATOR) >/dev/null 2>&1; then \
-		$(VERILATOR) --lint-only -Wall $(addprefix -I,$(RTL_INC)) --top-module $(TOP_MOD) $(RTL_TOP) \
+		$(VERILATOR) --lint-only -Wall -y rtl/core +libext+.v --top-module tensortile_core \
+		  rtl/core/tensortile_core.v && \
+		$(VERILATOR) --lint-only -Wall -y rtl/core +libext+.v --top-module $(TOP_MOD) $(RTL_TOP) \
 		  && echo "   verilator: clean"; \
 	else echo "   verilator: MISSING -> CI/later (SKIP, not silent: logged)"; fi
 	@if command -v verible-verilog-lint >/dev/null 2>&1; then \
@@ -39,8 +41,8 @@ metrics: ## append a METRICS.md row from summary.json
 	@$(PY) scripts/metrics.py --from-summary summary.json
 
 # ---- documented placeholders (go live in the noted phase) -------------------
-sim: ## [Phase 2] cocotb lockstep benches
-	@echo ">> sim -- Phase 2 (cocotb PE/row/array/core lockstep). Placeholder; see DECISIONS.md."
+sim: ## cocotb lockstep benches (array / requant / fifo / core) vs the NumPy model
+	@PYTHONPATH=. $(PY) -m pytest dv/cocotb -q
 
 regress: ## [Phase 3] full constrained-random regression (>=1M MACs)
 	@echo ">> regress -- Phase 3 (>=1M MACs, >=95% func cov). Placeholder; see DECISIONS.md."
