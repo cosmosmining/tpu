@@ -2,7 +2,7 @@
 
 _Update this every session. Single source of truth for "where are we."_
 
-- **Current phase:** Phase 3 — DV closure (next). Phases 0–2 complete.
+- **Current phase:** Phase 4 — Formal (next). Phases 0–3 complete; first synth pass done.
 - **Branch:** `claude/inspiring-allen-bw0cx`
 - **Last updated:** 2026-06-07
 - **Target shuttle:** Tiny Tapeout TTSKY26c (sky130A), submission deadline 2026-09-07
@@ -36,7 +36,8 @@ _Update this every session. Single source of truth for "where are we."_
 - [x] **Phase 0 — Scaffold** (smoke green local+CI, committed d5d6b7e)
 - [x] **Phase 1 — Spec + golden model + MNIST** (26/26 tests; INT8 96.67%)
 - [x] **Phase 2 — P0 RTL + lockstep** (PE→array→requant/fifo→core; 4/4 benches bit-exact)
-- [ ] Phase 3 — DV closure on P0 (≥1M MACs, ≥95% func cov)  ← next
+- [x] **Phase 3 — DV closure** (1,000,160 MACs, 0 mismatches, 100% func cov 26/26)
+- [ ] Phase 4 — Formal (FIFO/FSM/descq/accumulator)  ← next
 - [ ] Phase 4 — Formal (FIFO/FSM/descq/accumulator)
 - [ ] Phase 5 — P1 features (ping-pong, desc queue, bias, counters, MNIST demo)
 - [ ] Phase 6 — DFT (scan + ATPG ≥95%)

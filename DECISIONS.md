@@ -122,3 +122,20 @@ wait for `busy==0` before issuing `start` (the core needs 1-2 cycles to return t
 
 **[dv] No `row` level module.** The array composes PEs directly per SPEC §3; a separate `row.v`
 added no verification value over the PE + array benches, so the ladder is PE → array → core.
+
+## 2026-06-07 — Phase 3 DV closure
+
+**[dv] Functional coverage = Python coverage model mapped to VPLAN (not SV covergroups).** Icarus
+lacks practical covergroup support; verilator code-coverage is a separate axis. The Phase-3
+functional coverage is a 26-bin model (`tb_regress.classify`) computed from the stimulus + golden
+model, covering saturation (high/low), rounding ties (±) and shift regimes, most-negative operands
+and the −128·−128 product, K-chain lengths, bias sign, M shapes, and output sign. Directed
+adversarial descriptors pin the rare bins; random fills the rest. Result: **26/26 (100%)** over
+**1,000,160 MACs / 3127 descriptors, 0 mismatches** (`dv/coverage_phase3.md`, 26.6 s).
+
+**[dv] Shared driver `coreio.py`** factored out of `tb_core` so `tb_regress` reuses the exact
+host protocol. `make sim` runs the fast levels (`-k "not regress"`); `make regress` runs the
+≥1M-MAC campaign (REGRESS_MACS env, default 1e6); nightly CI runs the full campaign.
+
+**[tooling] yosys 0.33 provisioned (apt).** Enables `make synth` for the area/flops-per-block
+numbers the spec wants "from the first synthesis run." Added to setup_tools.sh tier.

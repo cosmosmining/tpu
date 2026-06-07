@@ -50,14 +50,14 @@ fi
 # Tier 2: lightweight EDA via apt (LOCAL, best-effort).
 # ---------------------------------------------------------------------------
 need_apt=0
-for t in iverilog verilator; do have "$t" || need_apt=1; done
+for t in iverilog verilator yosys; do have "$t" || need_apt=1; done
 SUDO=""
 if [ "$(id -u)" -ne 0 ] && have sudo; then SUDO="sudo"; fi
 if [ "$need_apt" = 1 ] && have apt-get; then
-  log "[apt] installing iverilog + verilator (best-effort) ..."
+  log "[apt] installing iverilog + verilator + yosys (best-effort) ..."
   export DEBIAN_FRONTEND=noninteractive
   $SUDO apt-get update -qq >/dev/null 2>&1 || true
-  $SUDO apt-get install -y -qq iverilog verilator >/dev/null 2>&1 || APT_OK=0
+  $SUDO apt-get install -y -qq iverilog verilator yosys >/dev/null 2>&1 || APT_OK=0
 fi
 
 # ---------------------------------------------------------------------------

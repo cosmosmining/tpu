@@ -42,10 +42,10 @@ metrics: ## append a METRICS.md row from summary.json
 
 # ---- documented placeholders (go live in the noted phase) -------------------
 sim: ## cocotb lockstep benches (array / requant / fifo / core) vs the NumPy model
-	@PYTHONPATH=. $(PY) -m pytest dv/cocotb -q
+	@PYTHONPATH=. $(PY) -m pytest dv/cocotb -q -k "not regress"
 
-regress: ## [Phase 3] full constrained-random regression (>=1M MACs)
-	@echo ">> regress -- Phase 3 (>=1M MACs, >=95% func cov). Placeholder; see DECISIONS.md."
+regress: ## constrained-random regression (>=1M MACs, >=95% func cov) -> dv/coverage_phase3.md
+	@PYTHONPATH=. REGRESS_MACS=$${REGRESS_MACS:-1000000} $(PY) -m pytest dv/cocotb -q -k regress
 
 formal: ## [Phase 4] SymbiYosys proofs
 	@echo ">> formal -- Phase 4 (FIFO/FSM/descq/accumulator). Placeholder; see DECISIONS.md."

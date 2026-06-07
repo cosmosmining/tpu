@@ -23,7 +23,9 @@ def _env():
     env["PYTHONPATH"] = os.pathsep.join(extra)
     env.update(ARRAY_N=str(PARAMS["ARRAY_N"]), DATA_W=str(PARAMS["DATA_W"]),
                ACC_W=str(PARAMS["ACC_W"]), MAX_COLS="8",
-               FIFO_WIDTH="8", FIFO_DEPTH="8")
+               FIFO_WIDTH="8", FIFO_DEPTH="8",
+               REGRESS_MACS=env.get("REGRESS_MACS", "1000000"),
+               COV_OUT=str(REPO / "dv" / "coverage_phase3.md"))
     return env
 
 
@@ -52,7 +54,14 @@ def test_fifo():
     _run([CORE / "tt_fifo.v"], "tt_fifo", "tb_fifo", params={"WIDTH": 8, "DEPTH": 8})
 
 
+CORE_SRCS = [CORE / "tt_pe.v", CORE / "tt_mac_array.v", CORE / "tt_requant.v",
+             CORE / "tensortile_core.v"]
+CORE_PARAMS = {"ARRAY_N": 4, "DATA_W": 8, "ACC_W": 24, "BIAS_W": 16, "MAX_COLS": 8}
+
+
 def test_core():
-    _run([CORE / "tt_pe.v", CORE / "tt_mac_array.v", CORE / "tt_requant.v",
-          CORE / "tensortile_core.v"], "tensortile_core", "tb_core",
-         params={"ARRAY_N": 4, "DATA_W": 8, "ACC_W": 24, "BIAS_W": 16, "MAX_COLS": 8})
+    _run(CORE_SRCS, "tensortile_core", "tb_core", params=CORE_PARAMS)
+
+
+def test_regress():
+    _run(CORE_SRCS, "tensortile_core", "tb_regress", params=CORE_PARAMS)
