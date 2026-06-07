@@ -46,7 +46,9 @@ _Update this every session. Single source of truth for "where are we."_
   - [x] compiler (`compiler/tiler.py`): MLP → 4×4 tiled descriptors/streams
   - [x] per-output bias (since Phase 2) · perf counters (busy/MACs/stall-by-cause), validated
   - [x] closure re-met: fast benches + 1M regression + formal all green with the changes
-  - [ ] ping-pong weight double-buffer · [ ] 4-deep descriptor command queue (remaining P1 RTL)
+  - [x] **4-deep descriptor command queue** (`tensortile_engine`, reuses proven `tt_fifo`):
+    enqueue/occupancy/full + back-to-back execution, all results bit-exact (`tb_engine`)
+  - [ ] ping-pong weight double-buffer (remaining P1 RTL)
 - [ ] Phase 6 — DFT (scan + ATPG ≥95%) — **Fault tool unavailable in-env → CI/later**
 - [~] Phase 7 — Hardening + DSE
   - [x] **sky130 area DSE** (real, yosys+PDK): core 93% util @N4/MC8; Pareto in pnr/dse_report.md

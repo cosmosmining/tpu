@@ -73,3 +73,9 @@ def test_perf():
 
 def test_mnist():
     _run(CORE_SRCS, "tensortile_core", "tb_mnist", params=CORE_PARAMS)
+
+
+def test_engine():
+    _run(CORE_SRCS + [CORE / "tt_fifo.v", CORE / "tensortile_engine.v"],
+         "tensortile_engine", "tb_engine",
+         params={**CORE_PARAMS, "QDEPTH": 4})
