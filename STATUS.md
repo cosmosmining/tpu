@@ -9,16 +9,18 @@ _Update this every session. Single source of truth for "where are we."_
 - **Target shuttle:** Tiny Tapeout TTSKY26c (sky130A), submission deadline 2026-09-07
 - **Operator directive:** proceed through phases without stopping at gates; commit each gate.
 
-## Last results (Phase 0)
-- Repo scaffolded to spec §3 (full tree, brain files, docs stubs, model/RTL/DV/PD dirs).
-- Tools provisioned: **verilator 5.020, iverilog, numpy 2.4.6, cocotb 2.0.1, pytest 9.0.3**
-  (pip + apt). Heavy/CI tools (yosys, sby, verible, openroad, fault, peakrdl) documented in
-  DECISIONS.md, provisioned in later phases / CI.
-- `make smoke`: known-answer INT8 matmul + compile of `tt_um_tensortile` interface stub
-  (iverilog + verilator). **Result: see METRICS / gate report.**
-- CI workflows added: lint / test / formal / gds (manual) / nightly.
-- Hooks: PostToolUse (lint+compile after `rtl/` edits) + SessionStart (re-provision tools).
-- Slash commands: /regress /lockstep /timing /sweep /status.
+## Headline results (cumulative)
+- **Bit-exact** spec/model/RTL: SPEC §2 frozen (round-half-up); 26/26 model tests; golden GEMM/MLP.
+- **DV:** cocotb lockstep PE→array→requant→fifo→core; **1,000,160 MACs, 0 mismatches, 100% func
+  cov (26/26)** (`make regress` → dv/coverage_phase3.md).
+- **Formal:** FIFO safety + core FSM/accumulator proven by **k-induction** (unbounded) (`make formal`).
+- **Flagship:** 8×8 MNIST through the RTL core — **100/100 images bit-exact vs model, 96.00% silicon
+  accuracy** (`make demo`); compiler in `compiler/tiler.py`; perf counters validated.
+- **PD (real sky130, area):** core ~14–16k cells / 119,231 µm² / **93% util @N4,MC8** (>70% — DSE
+  shows MC→2 ⇒ 73%); Pareto in pnr/dse_report.md (`make sweep`). Fmax/GDS = CI/later.
+- Tools (in-env): verilator 5.020, iverilog, yosys 0.33, numpy 2.4.6, cocotb 2.0.1, sklearn,
+  sky130_fd_sc_hd PDK (volare). Blocked-in-env (CI/later): OpenSTA, OpenROAD/LibreLane, Fault.
+- CI: lint / test / formal green; gds (manual/tag); nightly (full regress). Hooks + slash commands live.
 
 ## Phase 1 results
 - SPEC §2 arithmetic frozen (round-half-up) with 15 worked examples, all verified by tests.
