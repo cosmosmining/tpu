@@ -71,8 +71,8 @@ dft: ## [Phase 6] Fault scan insertion + ATPG
 harden: ## [Phase 7] LibreLane/ORFS single-point hardening
 	@echo ">> harden -- Phase 7 (LibreLane/ORFS). Placeholder; see DECISIONS.md."
 
-sweep: ## [Phase 7] parallel DSE (ARRAY_N x pipelining x clk x density)
-	@echo ">> sweep -- Phase 7 (Pareto DSE). Placeholder; see DECISIONS.md."
+sweep: ## sky130 area DSE across ARRAY_N x MAX_COLS x ACC_W -> pnr/dse_report.md
+	@bash pnr/sweep_sky130.sh
 
 predict: ## [Phase 7] freeze PREDICTIONS.md from STA/area
 	@echo ">> predict -- Phase 7 (freeze PREDICTIONS.md). Placeholder; see DECISIONS.md."

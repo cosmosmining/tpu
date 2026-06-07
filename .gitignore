@@ -38,3 +38,4 @@ dv/cocotb/sim_build/
 # synth raw outputs (area_report.md is curated + committed)
 synth/stat_*.txt
 synth/synth.log
+synth/sky130_*.txt

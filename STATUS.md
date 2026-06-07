@@ -45,9 +45,13 @@ _Update this every session. Single source of truth for "where are we."_
   - [x] per-output bias (since Phase 2) · perf counters (busy/MACs/stall-by-cause), validated
   - [x] closure re-met: fast benches + 1M regression + formal all green with the changes
   - [ ] ping-pong weight double-buffer · [ ] 4-deep descriptor command queue (remaining P1 RTL)
-- [ ] Phase 6 — DFT (scan + ATPG ≥95%)
-- [ ] Phase 7 — Hardening + DSE + frozen PREDICTIONS.md + green GDS
-- [ ] Phase 8 — Release (datasheet, INTEGRATION, RP2040 fw, v1.0.0)
+- [ ] Phase 6 — DFT (scan + ATPG ≥95%) — **Fault tool unavailable in-env → CI/later**
+- [~] Phase 7 — Hardening + DSE
+  - [x] **sky130 area DSE** (real, yosys+PDK): core 93% util @N4/MC8; Pareto in pnr/dse_report.md
+  - [ ] Fmax (OpenSTA) · placement util + **GDS** (OpenROAD/LibreLane) — **CI/later (not in-env)**
+  - [ ] freeze PREDICTIONS.md at operator-selected tapeout point (area preliminary recorded)
+- [x] **INTEGRATION.md** written (host tiling protocol centerpiece)
+- [ ] Phase 8 — Release (datasheet, RP2040 fw, v1.0.0)
 
 ## Next actions (Phase 2 — RTL bottom-up, each level lockstep before composing)
 1. `pe.v` → `row.v` → `array.v` → `accumulator`/`requant`/`fifo` → `tensortile_core` → CSR/SPI
