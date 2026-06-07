@@ -1,0 +1,15 @@
+# synth_area.ys -- generic Yosys synthesis for area/flop tracking.
+# No sky130 liberty yet (real um^2 comes from PnR in Phase 7); this reports flip-flop counts and
+# generic gate counts per block, which is the area proxy we track from the first synth onward.
+
+read_verilog rtl/core/tt_pe.v rtl/core/tt_mac_array.v rtl/core/tt_requant.v rtl/core/tt_fifo.v rtl/core/tensortile_core.v
+hierarchy -top tensortile_core -chparam ARRAY_N 4 -chparam DATA_W 8 -chparam ACC_W 24 -chparam BIAS_W 16 -chparam MAX_COLS 8
+
+# per-block view (instance counts + cells) before flattening
+proc
+opt
+tee -o synth/stat_hier.txt stat
+
+# full generic synthesis -> flops + gate count
+synth -top tensortile_core
+tee -o synth/stat_total.txt stat

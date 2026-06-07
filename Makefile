@@ -53,8 +53,11 @@ formal: ## [Phase 4] SymbiYosys proofs
 cov: ## [Phase 3] functional + code coverage report
 	@echo ">> cov -- Phase 3 coverage report. Placeholder; see DECISIONS.md."
 
-synth: ## [Phase 2+] Yosys synth + area/flop report
-	@echo ">> synth -- Phase 2+ (Yosys area/flops -> METRICS.md). Placeholder; see DECISIONS.md."
+synth: ## Yosys generic synth: flop/cell counts per block -> synth/stat_*.txt
+	@if command -v yosys >/dev/null 2>&1; then \
+		yosys -q -s synth/synth_area.ys -l synth/synth.log && \
+		echo "   synth done -> synth/stat_total.txt, synth/area_report.md"; \
+	else echo "   yosys: MISSING -> CI/later (SKIP, not silent: logged)"; fi
 
 dft: ## [Phase 6] Fault scan insertion + ATPG
 	@echo ">> dft -- Phase 6 (scan + ATPG >=95%). Placeholder; see DECISIONS.md."
