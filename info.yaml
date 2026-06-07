@@ -1,22 +1,26 @@
 # Tiny Tapeout project metadata (TTSKY26c, sky130A).
-#
-# PHASE-0 STUB. top_module / language / clock are real; the pinout is TBD until docs/SPEC.md §8
-# (pin map) is frozen, and the source-file layout is reconciled with the spec §3 tree during
-# Phase 7 hardening. See DECISIONS.md (2026-06-07).
+# Source list + pinout reflect the real top (SPI -> CSR/bridge -> descriptor queue + core).
+# Tile count may shrink to fit ≤70% util at the operator-selected DSE point (pnr/dse_report.md).
 project:
   title: "TensorTile"
   author: "TBD"
   description: "Weight-stationary INT8 systolic GEMM accelerator with on-chip requantization"
   language: "Verilog"
   clock_hz: 50000000          # 50 MHz target
-  tiles: "4x2"                # ~640 x 200 um
+  tiles: "4x2"                # ~640 x 200 um (revisit per DSE; core@N4,MC8 ~93% util)
   top_module: "tt_um_tensortile"
-  # NOTE: paths reconciled with TT src/ layout in Phase 7.
   source_files:
+    - rtl/core/tt_pe.v
+    - rtl/core/tt_mac_array.v
+    - rtl/core/tt_requant.v
+    - rtl/core/tt_fifo.v
+    - rtl/core/tensortile_core.v
+    - rtl/core/tensortile_engine.v
+    - rtl/tt_top/tt_spi_host.v
     - rtl/tt_top/tt_um_tensortile.v
 
-# Pinout -- TBD until SPEC §8 freeze (planned: SPI slave + IRQ + scan-test mux on uio).
+# Pinout (SPEC §8). Normal mode; scan muxes under the test_en CSR bit (Phase 6).
 pinout:
-  ui:    ["TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD"]
-  uo:    ["TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD"]
-  uio:   ["TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD"]
+  ui:    ["SPI SCLK", "SPI CSn", "SPI MOSI", "", "", "", "", ""]
+  uo:    ["SPI MISO", "IRQ", "busy", "done", "", "", "", ""]
+  uio:   ["", "", "", "", "", "", "", ""]
