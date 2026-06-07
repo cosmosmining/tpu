@@ -39,6 +39,7 @@ module tensortile_engine #(
     input  wire                              out_ready,
     // status + performance counters (from the core)
     output wire                              busy,        // core busy
+    output wire                              done,        // 1-cycle pulse per finished descriptor
     output wire                              idle,        // engine idle: core idle AND queue empty
     output wire [31:0]                       perf_busy,
     output wire [31:0]                       perf_mac,
@@ -67,6 +68,7 @@ module tensortile_engine #(
     end
 
     assign busy = core_busy;
+    assign done = core_done;
     assign idle = ~core_busy & q_empty;
 
     // ---- core (unchanged) ------------------------------------------------------------------

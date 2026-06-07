@@ -30,7 +30,8 @@ lint: ## verilator --lint-only -Wall (+ verible if present); zero errors require
 	@if command -v $(VERILATOR) >/dev/null 2>&1; then \
 		$(VERILATOR) --lint-only -Wall -y rtl/core +libext+.v --top-module tensortile_core \
 		  rtl/core/tensortile_core.v && \
-		$(VERILATOR) --lint-only -Wall -y rtl/core +libext+.v --top-module $(TOP_MOD) $(RTL_TOP) \
+		$(VERILATOR) --lint-only -Wall -y rtl/core -y rtl/tt_top +libext+.v \
+		  --top-module $(TOP_MOD) $(RTL_TOP) \
 		  && echo "   verilator: clean"; \
 	else echo "   verilator: MISSING -> CI/later (SKIP, not silent: logged)"; fi
 	@if command -v verible-verilog-lint >/dev/null 2>&1; then \

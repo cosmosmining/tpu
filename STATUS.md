@@ -59,7 +59,9 @@ _Update this every session. Single source of truth for "where are we."_
   - [x] **DATASHEET.md** (arch/arithmetic/perf/area/verification consolidated)
   - [x] **RP2040 demo firmware** (`fw/`: driver + MNIST demo, compile-clean; HW-untested)
   - [x] compiler weights export (`compiler/export.py` → `fw/mnist_weights.h`)
-  - [ ] SPI/CSR top integration (`tt_um_tensortile` real wrapper) — unblocks fw HW test
+  - [x] **SPI/CSR top integration**: `tt_um_tensortile` = SPI-slave → CSR/bridge (`tt_spi_host`)
+    → descriptor queue + core; **end-to-end GEMM over SPI bit-exact** (`tb_top`); smoke compiles
+    the full hierarchy; 7/7 fast benches green
   - [ ] tag v1.0.0 (after a frozen tapeout point + GDS in CI)
 
 ## Next actions (Phase 2 — RTL bottom-up, each level lockstep before composing)

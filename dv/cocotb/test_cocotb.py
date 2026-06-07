@@ -79,3 +79,14 @@ def test_engine():
     _run(CORE_SRCS + [CORE / "tt_fifo.v", CORE / "tensortile_engine.v"],
          "tensortile_engine", "tb_engine",
          params={**CORE_PARAMS, "QDEPTH": 4})
+
+
+TOP = REPO / "rtl" / "tt_top"
+TOP_SRCS = CORE_SRCS + [CORE / "tt_fifo.v", CORE / "tensortile_engine.v",
+                        TOP / "tt_spi_host.v", TOP / "tt_um_tensortile.v"]
+
+
+def test_top():
+    _run(TOP_SRCS, "tt_um_tensortile", "tb_top",
+         params={"ARRAY_N": 4, "DATA_W": 8, "ACC_W": 24, "BIAS_W": 16,
+                 "MAX_COLS": 8, "QDEPTH": 4})

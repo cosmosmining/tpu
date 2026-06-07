@@ -78,8 +78,9 @@ def check_verilator() -> None:
     if not have("verilator"):
         record("verilator lint", "SKIP->CI", "verilator not installed locally")
         return
-    rc, out = run(["verilator", "--lint-only", "-Wall", "--top-module",
-                   "tt_um_tensortile", str(TOP)])
+    rc, out = run(["verilator", "--lint-only", "-Wall",
+                   "-y", str(ROOT / "rtl" / "core"), "-y", str(ROOT / "rtl" / "tt_top"),
+                   "+libext+.v", "--top-module", "tt_um_tensortile", str(TOP)])
     if rc == 0:
         record("verilator lint", "RUN-OK", "tt_um_tensortile -Wall clean")
     else:
@@ -94,7 +95,8 @@ def check_iverilog() -> None:
         return
     out_vvp = ROOT / "build" / "tt_stub.vvp"
     out_vvp.parent.mkdir(exist_ok=True)
-    rc, out = run(["iverilog", "-g2012", "-o", str(out_vvp), str(TOP)])
+    rc, out = run(["iverilog", "-g2012", "-y", str(ROOT / "rtl" / "core"),
+                   "-y", str(ROOT / "rtl" / "tt_top"), "-o", str(out_vvp), str(TOP)])
     if rc == 0:
         record("iverilog compile", "RUN-OK", "tt_um_tensortile compiled")
     else:
