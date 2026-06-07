@@ -29,3 +29,8 @@ venv/
 # Editor / OS
 .DS_Store
 *.swp
+
+# cocotb runner artifacts
+*.result.xml
+results.xml
+dv/cocotb/sim_build/
