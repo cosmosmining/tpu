@@ -57,8 +57,10 @@ formal: ## formal proofs (yosys sat k-induction): FIFO safety + core FSM/accumul
 		echo ">> formal: tensortile_core" && yosys -q -s dv/formal/prove_core.ys && echo "   tensortile_core: PROVEN (k-induction)"; \
 	else echo "   yosys: MISSING -> CI/later (SKIP, not silent: logged)"; fi
 
-cov: ## [Phase 3] functional + code coverage report
-	@echo ">> cov -- Phase 3 coverage report. Placeholder; see DECISIONS.md."
+cov: ## functional coverage (regression -> dv/coverage_phase3.md); code cov = verilator/CI
+	@PYTHONPATH=. REGRESS_MACS=$${REGRESS_MACS:-100000} $(PY) -m pytest dv/cocotb -q -k regress \
+	  && echo "   functional coverage -> dv/coverage_phase3.md" \
+	  && echo "   (line/toggle code coverage: verilator --coverage, run in CI)"
 
 synth: ## Yosys generic synth: flop/cell counts per block -> synth/stat_*.txt
 	@if command -v yosys >/dev/null 2>&1; then \

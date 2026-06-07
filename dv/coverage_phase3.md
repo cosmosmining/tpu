@@ -1,7 +1,7 @@
 # Phase 3 — Functional Coverage Report (tensortile_core)
 
-- descriptors: **3127**
-- MAC operations: **1,000,160** (target 1,000,000)
+- descriptors: **307**
+- MAC operations: **100,720** (target 100,000)
 - mismatches vs model: **0**
 - functional coverage: **100.0%** (26/26 bins)
 
