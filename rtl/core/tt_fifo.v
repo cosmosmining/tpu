@@ -54,5 +54,21 @@ module tt_fifo #(
             endcase
         end
     end
+
+`ifdef FORMAL
+    // Safety invariants (proven by k-induction; see dv/formal/). All are guarded by rst_n so
+    // they constrain only normal operation.
+    always @(posedge clk) begin
+        if (rst_n) begin
+            assert (count <= DEPTH[CNT_W-1:0]);              // no overflow of the counter
+            assert (wr_ptr <= LASTP);                        // write pointer in range
+            assert (rd_ptr <= LASTP);                        // read pointer in range
+            assert (empty == (count == {CNT_W{1'b0}}));      // empty flag consistent
+            assert (full  == (count == DEPTH[CNT_W-1:0]));   // full flag consistent
+            assert (!(do_wr & full));                        // never actually push when full
+            assert (!(do_rd & empty));                       // never actually pop when empty
+        end
+    end
+`endif
 endmodule
 `default_nettype wire

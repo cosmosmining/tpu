@@ -151,5 +151,29 @@ module tensortile_core #(
             endcase
         end
     end
+
+`ifdef FORMAL
+    // Control-FSM + accumulator-safety properties (see dv/formal/). The host always programs valid
+    // descriptors (clocked input constraint, sampled at every edge):
+    localparam [7:0] MAXCOLS8 = MAX_COLS[7:0];
+    always @(posedge clk) begin
+        assume (num_cols >= 8'd1);
+        assume (num_cols <= MAXCOLS8);
+        assume (num_k_tiles >= 8'd1);
+    end
+    always @(posedge clk) if (rst_n) begin
+        assert (state <= S_DONE);                       // FSM never enters an illegal state
+        assert (d_cols <= MAX_COLS[7:0]);               // latched column count fits the buffer
+        assert (drow < ARRAY_N[7:0]);                   // accumulator row index always in range
+        // While streaming, the accumulate write index cout < d_cols (<= MAX_COLS); the cycle cout
+        // reaches d_cols the FSM leaves S_STREAM, so the acc-buffer write index is always in range.
+        if (state == S_STREAM) assert (cout < d_cols);
+        // While draining, the read index dcol < d_cols (<= MAX_COLS) -> in range; and out_valid is
+        // asserted only here, so accumulator reads and writes never occur in the same cycle (no
+        // write-conflict / read-during-write).
+        if (state == S_DRAIN) assert (dcol < d_cols);
+        assert (out_valid == (state == S_DRAIN));       // outputs strictly confined to the drain phase
+    end
+`endif
 endmodule
 `default_nettype wire

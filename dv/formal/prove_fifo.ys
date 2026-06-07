@@ -1,0 +1,8 @@
+# Formal proof: tt_fifo safety invariants (no overflow/underflow, flag + pointer consistency).
+# Engine: yosys built-in `sat`, temporal induction -> unbounded proof. (No assumes needed.)
+read_verilog -formal -DFORMAL rtl/core/tt_fifo.v
+chparam -set WIDTH 8 -set DEPTH 8 tt_fifo
+prep -top tt_fifo
+memory_map
+opt -fast
+sat -tempinduct -prove-asserts -seq 10 -set-init-zero -verify

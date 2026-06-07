@@ -1,0 +1,13 @@
+# Formal proof: tensortile_core control-FSM + accumulator-index safety.
+# Inputs constrained structurally by the fv_core wrapper (yosys `sat` ignores $assume). The
+# multiplier datapath is irrelevant to the control properties and is deleted to keep the SAT
+# instance small. Engine: temporal induction -> unbounded proof.
+read_verilog -formal -DFORMAL rtl/core/tt_pe.v rtl/core/tt_mac_array.v rtl/core/tt_requant.v rtl/core/tensortile_core.v dv/formal/fv_core.v
+hierarchy -top fv_core
+flatten
+prep -top fv_core
+delete t:$mul
+opt_clean
+memory_map
+opt -fast
+sat -tempinduct -prove-asserts -seq 20 -set-init-zero -verify

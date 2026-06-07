@@ -139,3 +139,27 @@ host protocol. `make sim` runs the fast levels (`-k "not regress"`); `make regre
 
 **[tooling] yosys 0.33 provisioned (apt).** Enables `make synth` for the area/flops-per-block
 numbers the spec wants "from the first synthesis run." Added to setup_tools.sh tier.
+
+## 2026-06-07 — Phase 4 formal
+
+**[formal] Engine = yosys built-in `sat` + temporal induction (unbounded), not SymbiYosys.** sby
+isn't in apt and needs an external SMT solver binary (z3 binary absent; only z3-python present).
+yosys `sat -tempinduct` uses the built-in MiniSAT — zero extra deps, fully reproducible. Proofs
+are **unbounded** (k-induction), not merely bounded.
+
+**[formal] yosys `sat` IGNORES `$assume` cells (verified with a minimal testcase).** So input
+constraints can't be expressed as in-RTL `assume` for this engine. Descriptor-input validity is
+instead enforced **structurally** in the `dv/formal/fv_core.v` harness (num_cols∈[1..MAX_COLS],
+num_k_tiles≥1 derived from free bits). The in-module `assume`s are retained (inert under `sat`)
+for a future sby flow that honors them.
+
+**[formal] Multiplier datapath deleted in the core proof (`delete t:$mul`).** The control/index
+safety properties are independent of product values; freeing the datapath is a sound abstraction
+and keeps the SAT instance tractable. arr_outv (control) comes from the valid-pipe FFs, untouched.
+
+**[formal] Invariants had to be the reachable ones, not the naive bounds.** k-induction starts
+from arbitrary assert-satisfying states, so `cout<=d_cols` / `dcol<MAX_COLS` were non-inductive
+(an unreachable start could overshoot). Strengthened to the phase-scoped forms
+`(S_STREAM⇒cout<d_cols)`, `(S_DRAIN⇒dcol<d_cols)` — the actual reachable invariants — which are
+1-inductive. The RTL was already correct (it indexes `cout[CIDX-1:0]`); only the *properties*
+needed tightening. Proven: FIFO safety; FSM legal-state; accumulator index + write-conflict freedom.

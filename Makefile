@@ -47,8 +47,11 @@ sim: ## cocotb lockstep benches (array / requant / fifo / core) vs the NumPy mod
 regress: ## constrained-random regression (>=1M MACs, >=95% func cov) -> dv/coverage_phase3.md
 	@PYTHONPATH=. REGRESS_MACS=$${REGRESS_MACS:-1000000} $(PY) -m pytest dv/cocotb -q -k regress
 
-formal: ## [Phase 4] SymbiYosys proofs
-	@echo ">> formal -- Phase 4 (FIFO/FSM/descq/accumulator). Placeholder; see DECISIONS.md."
+formal: ## formal proofs (yosys sat k-induction): FIFO safety + core FSM/accumulator
+	@if command -v yosys >/dev/null 2>&1; then \
+		echo ">> formal: tt_fifo"        && yosys -q -s dv/formal/prove_fifo.ys && echo "   tt_fifo: PROVEN (k-induction)"; \
+		echo ">> formal: tensortile_core" && yosys -q -s dv/formal/prove_core.ys && echo "   tensortile_core: PROVEN (k-induction)"; \
+	else echo "   yosys: MISSING -> CI/later (SKIP, not silent: logged)"; fi
 
 cov: ## [Phase 3] functional + code coverage report
 	@echo ">> cov -- Phase 3 coverage report. Placeholder; see DECISIONS.md."

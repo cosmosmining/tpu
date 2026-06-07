@@ -13,5 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Formal (placeholder until Phase 4)
+      - name: Install yosys
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq yosys
+      - name: Formal proofs (FIFO safety + core FSM/accumulator)
         run: make formal

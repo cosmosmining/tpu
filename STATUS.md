@@ -2,7 +2,7 @@
 
 _Update this every session. Single source of truth for "where are we."_
 
-- **Current phase:** Phase 4 — Formal (next). Phases 0–3 complete; first synth pass done.
+- **Current phase:** Phase 5 — P1 features (next). Phases 0–4 complete; first synth pass done.
 - **Branch:** `claude/inspiring-allen-bw0cx`
 - **Last updated:** 2026-06-07
 - **Target shuttle:** Tiny Tapeout TTSKY26c (sky130A), submission deadline 2026-09-07
@@ -37,9 +37,8 @@ _Update this every session. Single source of truth for "where are we."_
 - [x] **Phase 1 — Spec + golden model + MNIST** (26/26 tests; INT8 96.67%)
 - [x] **Phase 2 — P0 RTL + lockstep** (PE→array→requant/fifo→core; 4/4 benches bit-exact)
 - [x] **Phase 3 — DV closure** (1,000,160 MACs, 0 mismatches, 100% func cov 26/26)
-- [ ] Phase 4 — Formal (FIFO/FSM/descq/accumulator)  ← next
-- [ ] Phase 4 — Formal (FIFO/FSM/descq/accumulator)
-- [ ] Phase 5 — P1 features (ping-pong, desc queue, bias, counters, MNIST demo)
+- [x] **Phase 4 — Formal** (FIFO safety + core FSM/accumulator proven by k-induction)
+- [ ] Phase 5 — P1 features (ping-pong, desc queue, bias, counters, MNIST demo)  ← next
 - [ ] Phase 6 — DFT (scan + ATPG ≥95%)
 - [ ] Phase 7 — Hardening + DSE + frozen PREDICTIONS.md + green GDS
 - [ ] Phase 8 — Release (datasheet, INTEGRATION, RP2040 fw, v1.0.0)
