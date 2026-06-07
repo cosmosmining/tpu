@@ -65,3 +65,11 @@ def test_core():
 
 def test_regress():
     _run(CORE_SRCS, "tensortile_core", "tb_regress", params=CORE_PARAMS)
+
+
+def test_perf():
+    _run(CORE_SRCS, "tensortile_core", "tb_perf", params=CORE_PARAMS)
+
+
+def test_mnist():
+    _run(CORE_SRCS, "tensortile_core", "tb_mnist", params=CORE_PARAMS)

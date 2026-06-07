@@ -163,3 +163,23 @@ from arbitrary assert-satisfying states, so `cout<=d_cols` / `dcol<MAX_COLS` wer
 `(S_STREAM⇒cout<d_cols)`, `(S_DRAIN⇒dcol<d_cols)` — the actual reachable invariants — which are
 1-inductive. The RTL was already correct (it indexes `cout[CIDX-1:0]`); only the *properties*
 needed tightening. Proven: FIFO safety; FSM legal-state; accumulator index + write-conflict freedom.
+
+## 2026-06-07 — Phase 5 P1 (flagship demo, compiler, perf counters)
+
+**[demo] End-to-end MNIST runs on the base core via Python-side tiling (`compiler/tiler.py`).**
+Each MLP layer is split into ARRAY_N-row × ARRAY_N-K tiles (last row-tile zero-padded); per-tile
+results from `tensortile_core` are assembled into the layer output. Since `run_descriptor` is
+bit-exact to `quant_gemm` (proven in tb_core), the assembled result equals `mlp_ref`. Verified
+**100/100 images bit-exact, 96.00% silicon accuracy** (`make demo`, `MNIST_IMAGES`). MNIST is
+matrix-vector (M=1), so the base core suffices — no descriptor queue needed for the flagship.
+
+**[perf] Performance counters added to the core** (busy, MACs=feeds·ARRAY_N², stall_act =
+activation starvation, stall_bp = result backpressure), cleared per descriptor. `tb_perf` checks
+MAC count exactly and that stall counters track injected starvation/backpressure (exact prediction
+of stall cycles is left loose — cocotb drain entry/exit edges add ±2; the counters themselves are
+exact in RTL). Exposed as core output ports; CSR readout lands with the SPI/CSR wrapper.
+
+**[scope] Ping-pong weight double-buffer and the 4-deep descriptor queue remain.** They are pure-RTL
+P1 differentiators (no new tools needed) tracked as remaining Phase-5 work, not skipped. The
+area-fallback ladder treats both as reducible (descq 4→2; ping-pong only droppable with operator
+approval), so the flagship/closure do not depend on them.

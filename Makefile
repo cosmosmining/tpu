@@ -42,7 +42,10 @@ metrics: ## append a METRICS.md row from summary.json
 
 # ---- documented placeholders (go live in the noted phase) -------------------
 sim: ## cocotb lockstep benches (array / requant / fifo / core) vs the NumPy model
-	@PYTHONPATH=. $(PY) -m pytest dv/cocotb -q -k "not regress"
+	@PYTHONPATH=. $(PY) -m pytest dv/cocotb -q -k "not regress and not mnist"
+
+demo: ## end-to-end MNIST through the RTL core (>=100 images, bit-exact vs model)
+	@PYTHONPATH=. MNIST_IMAGES=$${MNIST_IMAGES:-100} $(PY) -m pytest dv/cocotb -q -k mnist
 
 regress: ## constrained-random regression (>=1M MACs, >=95% func cov) -> dv/coverage_phase3.md
 	@PYTHONPATH=. REGRESS_MACS=$${REGRESS_MACS:-1000000} $(PY) -m pytest dv/cocotb -q -k regress

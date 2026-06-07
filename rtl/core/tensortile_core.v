@@ -45,7 +45,12 @@ module tensortile_core #(
     // result stream (INT8)
     output wire                              out_valid,
     output wire signed [DATA_W-1:0]          out_data,
-    input  wire                              out_ready
+    input  wire                              out_ready,
+    // performance counters (P1; cleared when a new descriptor starts)
+    output reg  [31:0]                       perf_busy,        // cycles busy (state != IDLE)
+    output reg  [31:0]                       perf_mac,         // MAC operations issued
+    output reg  [31:0]                       perf_stall_act,   // stream stalls: activation starvation
+    output reg  [31:0]                       perf_stall_bp     // drain stalls: result backpressure
 );
     localparam [2:0] S_IDLE=3'd0, S_LOADW=3'd1, S_STREAM=3'd2, S_DRAIN=3'd3, S_DONE=3'd4;
     localparam integer RIDX = (ARRAY_N  <= 1) ? 1 : $clog2(ARRAY_N);
@@ -149,6 +154,26 @@ module tensortile_core #(
                 S_DONE: begin done <= 1'b1; state <= S_IDLE; end
                 default: state <= S_IDLE;
             endcase
+        end
+    end
+
+    // ---- performance counters (P1) ---------------------------------------------------------
+    // Each accepted activation column drives ARRAY_N*ARRAY_N MACs through the array. Stalls are
+    // split by cause: activation starvation (array can accept but host has no column) vs result
+    // backpressure (output ready to drain but consumer not ready). Cleared at each `start`.
+    localparam [31:0] MACS_PER_FEED = ARRAY_N * ARRAY_N;
+    always @(posedge clk) begin
+        if (!rst_n) begin
+            perf_busy <= 32'd0; perf_mac <= 32'd0;
+            perf_stall_act <= 32'd0; perf_stall_bp <= 32'd0;
+        end else if (state == S_IDLE && start) begin
+            perf_busy <= 32'd0; perf_mac <= 32'd0;
+            perf_stall_act <= 32'd0; perf_stall_bp <= 32'd0;
+        end else begin
+            if (state != S_IDLE)                              perf_busy <= perf_busy + 32'd1;
+            if (feed)                                         perf_mac  <= perf_mac + MACS_PER_FEED;
+            if (state == S_STREAM && col_ready && !col_valid) perf_stall_act <= perf_stall_act + 32'd1;
+            if (state == S_DRAIN  && out_valid && !out_ready) perf_stall_bp  <= perf_stall_bp + 32'd1;
         end
     end
 

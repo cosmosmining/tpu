@@ -2,7 +2,8 @@
 
 _Update this every session. Single source of truth for "where are we."_
 
-- **Current phase:** Phase 5 — P1 features (next). Phases 0–4 complete; first synth pass done.
+- **Current phase:** Phase 5 — P1 features (in progress). Flagship MNIST-through-RTL + compiler
+  + perf counters + bias done & closure re-met; ping-pong + 4-deep descriptor queue remain.
 - **Branch:** `claude/inspiring-allen-bw0cx`
 - **Last updated:** 2026-06-07
 - **Target shuttle:** Tiny Tapeout TTSKY26c (sky130A), submission deadline 2026-09-07
@@ -38,7 +39,12 @@ _Update this every session. Single source of truth for "where are we."_
 - [x] **Phase 2 — P0 RTL + lockstep** (PE→array→requant/fifo→core; 4/4 benches bit-exact)
 - [x] **Phase 3 — DV closure** (1,000,160 MACs, 0 mismatches, 100% func cov 26/26)
 - [x] **Phase 4 — Formal** (FIFO safety + core FSM/accumulator proven by k-induction)
-- [ ] Phase 5 — P1 features (ping-pong, desc queue, bias, counters, MNIST demo)  ← next
+- [~] **Phase 5 — P1 features** ← in progress
+  - [x] end-to-end MNIST through RTL: **100/100 images bit-exact vs model, 96.00% silicon acc**
+  - [x] compiler (`compiler/tiler.py`): MLP → 4×4 tiled descriptors/streams
+  - [x] per-output bias (since Phase 2) · perf counters (busy/MACs/stall-by-cause), validated
+  - [x] closure re-met: fast benches + 1M regression + formal all green with the changes
+  - [ ] ping-pong weight double-buffer · [ ] 4-deep descriptor command queue (remaining P1 RTL)
 - [ ] Phase 6 — DFT (scan + ATPG ≥95%)
 - [ ] Phase 7 — Hardening + DSE + frozen PREDICTIONS.md + green GDS
 - [ ] Phase 8 — Release (datasheet, INTEGRATION, RP2040 fw, v1.0.0)

@@ -25,8 +25,8 @@ Tests: model = `model/test_*.py`; RTL benches = `dv/cocotb/tb_*.py`; cov bins = 
 | F-BIAS | §2 (P1) | 16b bias add | `tb_requant`, `tb_core` | bias_on/off/pos/neg | ✅ RTL+cov |
 | F-DQ | §4 (P1) | 4-deep descriptor queue drain | `test_desc_queue` | queue occupancy 0..4 | Phase 5 |
 | F-PP | §3 (P1) | ping-pong weight switchover | `test_pingpong_race` | switch under load | Phase 5 |
-| F-PERF | §4 (P1) | perf counters vs model | `test_perf_counters` | stall-cause bins | Phase 5 |
-| F-MNIST | demo | end-to-end MNIST bit-exact (model) | `test_mlp_ref` (96.67%) | per-class | ✅ model; RTL demo Phase 5 |
+| F-PERF | §4 (P1) | perf counters vs model | `tb_perf` (MAC exact, stall-by-cause) | stall_act / stall_bp | ✅ RTL |
+| F-MNIST | demo | end-to-end MNIST bit-exact through RTL | `tb_mnist` (100/100, 96.0%) | per-class | ✅ RTL demo |
 
 Phase-3 regression: see `dv/coverage_phase3.md` (generated) — 26/26 functional bins, ≥1M MACs,
 0 mismatches.
