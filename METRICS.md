@@ -19,3 +19,4 @@ Columns:
 | date | commit | phase | func_cov | macs | cells / area | WNS | util | atpg | notes |
 |------|--------|-------|----------|------|--------------|-----|------|------|-------|
 | 2026-06-07 | scaffold | 0 | n/a | n/a | n/a | n/a | n/a | n/a | Phase 0 scaffold; `make smoke` green (known-answer INT8 matmul + `tt_um_tensortile` stub compiled w/ iverilog+verilator). No synth/DV/PD yet. |
+| 2026-06-07 | d5d6b7e | 1 | model 26/26 | n/a | n/a | n/a | n/a | n/a | Phase 1: SPEC arithmetic frozen (round-half-up); golden GEMM/MLP + 26 unit tests pass; MNIST 8×8 float 97.33% / **INT8 96.67%** (frozen weights). No RTL/synth yet. |

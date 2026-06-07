@@ -2,10 +2,11 @@
 
 _Update this every session. Single source of truth for "where are we."_
 
-- **Current phase:** Phase 0 — Scaffold (awaiting operator gate approval)
+- **Current phase:** Phase 2 — P0 RTL + lockstep (in progress). Phases 0–1 complete.
 - **Branch:** `claude/inspiring-allen-bw0cx`
 - **Last updated:** 2026-06-07
 - **Target shuttle:** Tiny Tapeout TTSKY26c (sky130A), submission deadline 2026-09-07
+- **Operator directive:** proceed through phases without stopping at gates; commit each gate.
 
 ## Last results (Phase 0)
 - Repo scaffolded to spec §3 (full tree, brain files, docs stubs, model/RTL/DV/PD dirs).
@@ -18,10 +19,17 @@ _Update this every session. Single source of truth for "where are we."_
 - Hooks: PostToolUse (lint+compile after `rtl/` edits) + SessionStart (re-provision tools).
 - Slash commands: /regress /lockstep /timing /sweep /status.
 
-## Phase ladder (stop at every gate)
-- [ ] **Phase 0 — Scaffold** ← awaiting "continue"
-- [ ] Phase 1 — Spec + golden model + MNIST demo workload
-- [ ] Phase 2 — P0 RTL + lockstep (PE→row→array→control)
+## Phase 1 results
+- SPEC §2 arithmetic frozen (round-half-up) with 15 worked examples, all verified by tests.
+- Golden model: `gemm_ref.py` (GEMM + requant + K-tiling) + `mlp_ref.py`; **26/26 model tests
+  pass**. Bit-exact integer path; K-tiled == full GEMM proven.
+- MNIST 8×8 (sklearn digits, offline): **float 97.33% / INT8 96.67%** (frozen weights committed).
+- Descriptor format (§4), host tiling protocol (§5), pin map (§8) defined.
+
+## Phase ladder
+- [x] **Phase 0 — Scaffold** (smoke green local+CI, committed d5d6b7e)
+- [x] **Phase 1 — Spec + golden model + MNIST** (26/26 tests; INT8 96.67%)
+- [ ] Phase 2 — P0 RTL + lockstep (PE→row→array→control)  ← in progress
 - [ ] Phase 3 — DV closure on P0 (≥1M MACs, ≥95% func cov)
 - [ ] Phase 4 — Formal (FIFO/FSM/descq/accumulator)
 - [ ] Phase 5 — P1 features (ping-pong, desc queue, bias, counters, MNIST demo)
@@ -29,12 +37,11 @@ _Update this every session. Single source of truth for "where are we."_
 - [ ] Phase 7 — Hardening + DSE + frozen PREDICTIONS.md + green GDS
 - [ ] Phase 8 — Release (datasheet, INTEGRATION, RP2040 fw, v1.0.0)
 
-## Next actions (proposed — pending operator approval)
-1. Operator reviews Phase 0 gate report; says "continue."
-2. Phase 1: draft `docs/SPEC.md` arithmetic definition (accumulation width/signedness,
-   saturation bounds per stage, requant rounding rule + worked edge cases), then the NumPy
-   golden GEMM/MLP references with unit tests, MNIST train/quant + frozen weights, descriptor
-   format, host tiling protocol, and `docs/VPLAN.md`. **SPEC freeze is operator-gated.**
+## Next actions (Phase 2 — RTL bottom-up, each level lockstep before composing)
+1. `pe.v` → `row.v` → `array.v` → `accumulator`/`requant`/`fifo` → `tensortile_core` → CSR/SPI
+   → real `tt_um_tensortile`. Fully parametric in ARRAY_N/DATA_W/ACC_W.
+2. cocotb lockstep bench at each level vs `model/gemm_ref.py` (bit-exact). Then random GEMM
+   tiles end-to-end through the core. Gate: bit-exact, lint clean.
 
 ## Open risks / watch-items
 - Multipliers dominate area; ARRAY_N=4 INT8 = 16 MACs. Track area/flops from first synth.

@@ -58,3 +58,35 @@ later if startup latency matters.
 The TT project metadata file is created now for completeness, but pin assignments depend on the
 SPI/CSR pinout defined in SPEC.md (Phase 1). Pins are placeholders until then; reconciled with
 the spec §3 tree during Phase 7 hardening.
+
+## 2026-06-07 — Phase 1 spec + golden model
+
+**[arithmetic] Requant rounding = round-half-up (operator-frozen).** `(t + 2^(s-1)) >> s` with
+arithmetic shift; ties toward +∞; `s=0` exact passthrough; then clamp to INT8 (ReLU ⇒ lower
+bound 0). Operator chose this over round-half-to-even / away-from-zero / truncate (cheapest HW,
+classic TPU-style, deterministic). This is THE contract — SPEC §2, `gemm_ref.py`, tests all agree.
+
+**[arithmetic] 24-bit accumulator is non-saturating; overflow is out-of-spec.** Bit-exactness +
+K-tiling carry favor a plain two's-complement accumulator sized to not overflow; the K bound
+(≤511 adversarial terms) is documented (SPEC §2.3) and enforced by `quant_gemm_ktiled`
+(raises OverflowError). "Saturation at every stage" applies to the requant→INT8 + ReLU stages.
+
+**[arithmetic] Output path order:** `acc → +bias(final K-tile) → round-half-up shift → clamp(lo,127)`
+where `lo = 0 if relu else -128`. Saturation and ReLU folded into one clamp (order-independent for
+the shared upper bound). Bias added once, on the final K-tile.
+
+**[quant] Power-of-two-only quantization scheme.** All scales are 2^e so on-chip requant is a pure
+arithmetic shift (no requant multiplier). Inputs: pixel/16 ∈[0,1] → INT8 at scale 2^-7. Weights:
+per-tensor symmetric INT8, scale 2^ceil(log2(max|W|/127)). Bias: accumulator-domain, 16-bit.
+Requant shifts chosen from the training-set max |acc| to fill INT8 range. Frozen to
+`model/mnist/mnist_int8.npz` (committed).
+
+**[demo] MNIST 8×8 via sklearn `load_digits` (offline, no network).** Hidden=32, seed=0. Reported:
+**float 97.33% / INT8 96.67%** test accuracy (bit-exact integer path) — 0.66% quant drop. The
+INT8 number is the silicon target. (sklearn added to requirements; install was transient-flaky
+once, succeeded on retry.)
+
+**[pinmap] SPI-slave pinout defined (SPEC §8) so Phase 2 RTL can proceed.** SCLK/CSn/MOSI on
+`ui_in[2:0]`; MISO/IRQ/busy/done on `uo_out[3:0]`; `uio` reserved (inputs, `uio_oe=0`) in P0,
+reserved for scan muxing under `test_en` in Phase 6. Normally a "stop and ask" item, but the
+operator directed proceeding through phases; pinout chosen conventionally and logged here.
