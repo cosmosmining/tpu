@@ -1,0 +1,21 @@
+name: test
+# Phase-0 gate in CI: provision tools and run `make smoke`. Gains `make sim` (cocotb lockstep)
+# in Phase 2 and beyond.
+on:
+  push:
+    branches: [ main, 'claude/**' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Provision tools (pip + apt; idempotent)
+        run: make setup
+      - name: Smoke (Phase 0 gate)
+        run: make smoke

@@ -1,0 +1,32 @@
+// tensortile.rdl -- TensorTile CSR map (SystemRDL 2.0).
+//
+// PHASE-0 SKELETON. Phase 1 fills this out; PeakRDL then generates the APB3 register block plus
+// C/Python register headers used by fw/, the host, and DV. Field layout is illustrative and will
+// be finalized against docs/SPEC.md §6.
+
+addrmap tensortile {
+    name = "TensorTile CSRs";
+    desc = "Control / descriptor / status / performance registers for the TensorTile core.";
+
+    reg {
+        name = "Control";
+        field { sw = rw; hw = r; } start[0:0];     // 1 = begin execution
+        field { sw = rw; hw = r; } relu_en[1:1];   // saturating ReLU enable
+        field { sw = rw; hw = r; } test_en[2:2];   // DFT scan test-enable (Phase 6)
+        // TODO Phase 1: accumulate-enable (K-tiling), bias-enable (P1), IRQ enables.
+    } CTRL;
+
+    reg {
+        name = "Status";
+        field { sw = r; hw = w; } busy[0:0];
+        field { sw = r; hw = w; } done[1:1];
+        // TODO Phase 1: overflow/error flags, descriptor-queue occupancy.
+    } STATUS;
+
+    // TODO Phase 1:
+    //   - Descriptor registers + 4-deep command queue (P1): tile dims/counts, requant shift,
+    //     accumulate-enable, relu/bias enables.
+    //   - Performance counters: busy cycles, MACs issued, utilization %, stall cycles split by
+    //     cause (activation starvation vs result backpressure).
+    //   - IRQ status/enable on tile/layer completion.
+};

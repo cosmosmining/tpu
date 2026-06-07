@@ -1,0 +1,31 @@
+# Build / sim / PD artifacts
+build/
+sim_build/
+obj_dir/
+*.vcd
+*.fst
+*.vvp
+summary.json
+results/
+runs/
+*.log
+
+# Yosys / formal / PD outputs
+*.json.gz
+*_synth.v
+synth/out/
+pnr/out/
+dft/out/
+dv/formal/*/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# Editor / OS
+.DS_Store
+*.swp

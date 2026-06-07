@@ -1,0 +1,22 @@
+name: gds
+# Tiny Tapeout signoff GDS via the official TT GitHub Action.
+#
+# Gated to manual dispatch + version tags ONLY (NOT push/PR): the official action needs a
+# complete, valid TT project (frozen info.yaml pins, hardened sources), which does not exist
+# until Phase 7. Running it on every push during Phases 0-6 would redden `main` for no reason.
+# In Phase 7 the placeholder step below is replaced with the official reusable workflow
+# (TinyTapeout/tt-gds-action @ the TTSKY26c ref). See DECISIONS.md (2026-06-07).
+on:
+  workflow_dispatch:
+  push:
+    tags: [ 'v*' ]
+
+jobs:
+  gds:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: GDS (wired in Phase 7)
+        run: |
+          echo "Tiny Tapeout GDS signoff is wired in Phase 7."
+          echo "Phase 7 replaces this step with the official TT GDS action and a frozen info.yaml."

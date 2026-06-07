@@ -1,0 +1,14 @@
+# TensorTile regression manifest.
+# One test per line: <suite>/<test_name>  [tags]
+# Consumed by `make regress` (Phase 3+). Populated as benches land in Phase 2.
+#
+# suite       test                tags
+# ----------- ------------------- -------------------------------
+# cocotb      test_pe_mac         directed,smoke
+# cocotb      test_array_gemm     directed
+# cocotb      test_requant_round  directed,adversarial
+# cocotb      test_k_accumulation directed
+# cocotb      test_rand_gemm      random,>=1M-macs
+# cocotb      test_mnist_demo     demo,e2e
+#
+# (commented until the benches exist — Phase 2/3)

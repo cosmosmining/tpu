@@ -1,0 +1,22 @@
+# Tiny Tapeout project metadata (TTSKY26c, sky130A).
+#
+# PHASE-0 STUB. top_module / language / clock are real; the pinout is TBD until docs/SPEC.md §8
+# (pin map) is frozen, and the source-file layout is reconciled with the spec §3 tree during
+# Phase 7 hardening. See DECISIONS.md (2026-06-07).
+project:
+  title: "TensorTile"
+  author: "TBD"
+  description: "Weight-stationary INT8 systolic GEMM accelerator with on-chip requantization"
+  language: "Verilog"
+  clock_hz: 50000000          # 50 MHz target
+  tiles: "4x2"                # ~640 x 200 um
+  top_module: "tt_um_tensortile"
+  # NOTE: paths reconciled with TT src/ layout in Phase 7.
+  source_files:
+    - rtl/tt_top/tt_um_tensortile.v
+
+# Pinout -- TBD until SPEC §8 freeze (planned: SPI slave + IRQ + scan-test mux on uio).
+pinout:
+  ui:    ["TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD"]
+  uo:    ["TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD"]
+  uio:   ["TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD", "TBD"]

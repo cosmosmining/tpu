@@ -1,0 +1,17 @@
+name: formal
+# SymbiYosys proofs (FIFO / control-FSM / descriptor-queue / accumulator write-conflict).
+# Phase 0: `make formal` is a documented placeholder (exits 0). In Phase 4 this job installs
+# yosys + sby (oss-cad-suite) and runs real proofs; the install step is added then.
+on:
+  push:
+    branches: [ main, 'claude/**' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  formal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Formal (placeholder until Phase 4)
+        run: make formal

@@ -1,0 +1,8 @@
+# TensorTile Python dependencies (REQUIRED tier — pip-installable).
+# Heavy EDA tools (yosys, sby, verible, openroad/librelane, fault) are NOT here;
+# they are provisioned via apt / release binaries / CI — see DECISIONS.md.
+
+numpy>=1.26          # bit-exact golden model arithmetic
+cocotb>=1.9          # RTL <-> model lockstep benches
+cocotb-bus>=0.2      # APB/SPI bus driver helpers for DV
+pytest>=8.0          # model unit tests + cocotb test runner

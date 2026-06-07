@@ -1,0 +1,21 @@
+name: nightly
+# Scheduled full regression. Runs only from the default branch once merged.
+# Phase 0: `make regress` is a documented placeholder (exits 0); becomes the >=1M-MAC
+# constrained-random campaign in Phase 3.
+on:
+  schedule:
+    - cron: '0 6 * * *'   # 06:00 UTC daily
+  workflow_dispatch:
+
+jobs:
+  regress:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Provision tools
+        run: make setup
+      - name: Full regression (placeholder until Phase 3)
+        run: make regress
