@@ -1,32 +1,51 @@
-// tensortile.rdl -- TensorTile CSR map (SystemRDL 2.0).
-//
-// PHASE-0 SKELETON. Phase 1 fills this out; PeakRDL then generates the APB3 register block plus
-// C/Python register headers used by fw/, the host, and DV. Field layout is illustrative and will
-// be finalized against docs/SPEC.md §6.
+// tensortile.rdl -- SystemRDL register map for TensorTile (SPI->APB3->CSR).
+// Matches docs/INTEGRATION.md §5 and fw/tensortile.h. Consumable by PeakRDL (CI) to generate the
+// CSR block + C/HTML; here it is the authoritative register specification.
 
 addrmap tensortile {
-    name = "TensorTile CSRs";
-    desc = "Control / descriptor / status / performance registers for the TensorTile core.";
+    name = "TensorTile CSR";
+    desc = "Weight-stationary INT8 systolic GEMM accelerator control/status.";
+    default regwidth = 8;
 
     reg {
-        name = "Control";
-        field { sw = rw; hw = r; } start[0:0];     // 1 = begin execution
-        field { sw = rw; hw = r; } relu_en[1:1];   // saturating ReLU enable
-        field { sw = rw; hw = r; } test_en[2:2];   // DFT scan test-enable (Phase 6)
-        // TODO Phase 1: accumulate-enable (K-tiling), bias-enable (P1), IRQ enables.
-    } CTRL;
+        name = "CTRL";
+        field { sw=w; hw=r; desc="soft reset (self-clearing)"; } soft_reset[0:0] = 0;
+        field { sw=rw; hw=r; desc="IRQ enable"; }                irq_en[1:1] = 0;
+        field { sw=rw; hw=r; desc="scan test mode (muxes scan onto pins)"; } test_en[7:7] = 0;
+    } CTRL @ 0x00;
 
     reg {
-        name = "Status";
-        field { sw = r; hw = w; } busy[0:0];
-        field { sw = r; hw = w; } done[1:1];
-        // TODO Phase 1: overflow/error flags, descriptor-queue occupancy.
-    } STATUS;
+        name = "STATUS";
+        field { sw=r; hw=w; desc="core busy"; }            busy[0:0];
+        field { sw=r; hw=w; desc="engine idle (core idle & queue empty)"; } idle[1:1];
+        field { sw=r; hw=w; desc="last descriptor done (sticky until read)"; } done[2:2];
+        field { sw=r; hw=w; desc="output FIFO has data"; } out_valid[3:3];
+        field { sw=r; hw=w; desc="descriptor queue full"; } desc_full[4:4];
+    } STATUS @ 0x01;
 
-    // TODO Phase 1:
-    //   - Descriptor registers + 4-deep command queue (P1): tile dims/counts, requant shift,
-    //     accumulate-enable, relu/bias enables.
-    //   - Performance counters: busy cycles, MACs issued, utilization %, stall cycles split by
-    //     cause (activation starvation vs result backpressure).
-    //   - IRQ status/enable on tile/layer completion.
+    // Descriptor: write NC, NK, then CF (the CF write enqueues the descriptor).
+    reg { field { sw=w; hw=r; desc="num_cols (1..MAX_COLS)"; } v[7:0]=0; } DESC_NC @ 0x02;
+    reg { field { sw=w; hw=r; desc="num_k_tiles (>=1)"; }     v[7:0]=0; } DESC_NK @ 0x03;
+    reg {
+        name = "DESC_CF"; desc = "write commits/enqueues the descriptor";
+        field { sw=w; hw=r; desc="requant shift (0..31)"; } shift[4:0]=0;
+        field { sw=w; hw=r; desc="saturating ReLU enable"; } relu_en[5:5]=0;
+        field { sw=w; hw=r; desc="bias add enable"; }       bias_en[6:6]=0;
+    } DESC_CF @ 0x04;
+
+    // Streaming data ports (write-only push / read-only pop). The bridge buffers bytes:
+    //   WDATA: ARRAY_N*ARRAY_N bytes per K-tile (loaded on the core's w_req)
+    //   ADATA: ARRAY_N bytes per activation column (pushed to the activation FIFO)
+    //   BDATA: ARRAY_N*2 bytes (int16 LE) of per-row bias
+    //   OUT:   pop one INT8 result byte from the output FIFO
+    reg { field { sw=w; hw=r; } v[7:0]=0; } WDATA @ 0x05;
+    reg { field { sw=w; hw=r; } v[7:0]=0; } ADATA @ 0x06;
+    reg { field { sw=r; hw=w; } v[7:0];   } OUT   @ 0x07;
+    reg { field { sw=w; hw=r; } v[7:0]=0; } BDATA @ 0x08;
+
+    // Performance counters (read-only, 4 x uint32 little-endian), cleared per descriptor start.
+    reg { field { sw=r; hw=w; } v[7:0]; } PERF_BUSY[4]      @ 0x10;
+    reg { field { sw=r; hw=w; } v[7:0]; } PERF_MAC[4]       @ 0x14;
+    reg { field { sw=r; hw=w; } v[7:0]; } PERF_STALL_ACT[4] @ 0x18;
+    reg { field { sw=r; hw=w; } v[7:0]; } PERF_STALL_BP[4]  @ 0x1C;
 };
