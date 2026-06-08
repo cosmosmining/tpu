@@ -7,7 +7,7 @@ project:
   description: "Weight-stationary INT8 systolic GEMM accelerator with on-chip requantization"
   language: "Verilog"
   clock_hz: 50000000          # 50 MHz target
-  tiles: "4x2"                # ~640 x 200 um (revisit per DSE; core@N4,MC8 ~93% util)
+  tiles: "6x2"                # ~960 x 200 um; FROZEN tapeout point: full-chip MC4 = 66% util (≤70%, DSE)
   top_module: "tt_um_tensortile"
   source_files:
     - rtl/core/tt_pe.v

@@ -94,7 +94,7 @@ def directed_cases():
     # 5) relu with negatives -> out_zero via relu
     rng = np.random.default_rng(99)
     cases.append((rng.integers(-128, 128, (N, N), np.int8),
-                  rng.integers(-128, 128, (N, 6), np.int8), 3, None, True))
+                  rng.integers(-128, 128, (N, min(6, MAX_COLS)), np.int8), 3, None, True))
     # 6) bias positive & negative, shift large
     bias = np.array([30000, -30000] + [0] * (N - 2), np.int64)[:N]
     cases.append((rng.integers(-8, 8, (N, N), np.int8),

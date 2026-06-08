@@ -35,7 +35,7 @@ async def test_core_ktiling(dut):
 async def test_core_bias_relu(dut):
     await reset(dut)
     rng = np.random.default_rng(12)
-    K, M = 2 * N, 5
+    K, M = 2 * N, min(5, MAX_COLS)
     W = rng.integers(-128, 128, size=(N, K), dtype=np.int8)
     A = rng.integers(-128, 128, size=(K, M), dtype=np.int8)
     bias = rng.integers(g.BIAS_MIN, g.BIAS_MAX + 1, size=N)

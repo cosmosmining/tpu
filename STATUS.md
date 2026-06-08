@@ -2,8 +2,9 @@
 
 _Update this every session. Single source of truth for "where are we."_
 
-- **Current phase:** Phase 5 — P1 features (in progress). Flagship MNIST-through-RTL + compiler
-  + perf counters + bias done & closure re-met; ping-pong + 4-deep descriptor queue remain.
+- **Current phase:** Phase 7 — **tapeout point FROZEN**: ARRAY_N=4, **MAX_COLS=4**, ACC_W=24,
+  **6×2** tiles (full-chip 65% util ≤70%). Whole shipping config re-verified at MC4; PREDICTIONS.md
+  frozen. Remaining = CI signoff (Fmax/GDS/ATPG) + v1.0.0 tag.
 - **Branch:** `claude/inspiring-allen-bw0cx`
 - **Last updated:** 2026-06-07
 - **Target shuttle:** Tiny Tapeout TTSKY26c (sky130A), submission deadline 2026-09-07
@@ -16,8 +17,9 @@ _Update this every session. Single source of truth for "where are we."_
 - **Formal:** FIFO safety + core FSM/accumulator proven by **k-induction** (unbounded) (`make formal`).
 - **Flagship:** 8×8 MNIST through the RTL core — **100/100 images bit-exact vs model, 96.00% silicon
   accuracy** (`make demo`); compiler in `compiler/tiler.py`; perf counters validated.
-- **PD (real sky130, area):** core ~14–16k cells / 119,231 µm² / **93% util @N4,MC8** (>70% — DSE
-  shows MC→2 ⇒ 73%); Pareto in pnr/dse_report.md (`make sweep`). Fmax/GDS = CI/later.
+- **PD (real sky130, area):** **full chip @ frozen point (N4/MC4) = 124–126k µm² / ~15k cells /
+  65% util of 6×2** (≤70% ✓, `make predict` gates it). 4×2 die infeasible (full chip 98–111%); DSE
+  +full-chip table in pnr/dse_report.md. Fmax/placement util/GDS = CI/later (graded vs PREDICTIONS).
 - Tools (in-env): verilator 5.020, iverilog, yosys 0.33, numpy 2.4.6, cocotb 2.0.1, sklearn,
   sky130_fd_sc_hd PDK (volare). Blocked-in-env (CI/later): OpenSTA, OpenROAD/LibreLane, Fault.
 - CI: lint / test / formal green; gds (manual/tag); nightly (full regress). Hooks + slash commands live.
@@ -54,7 +56,8 @@ _Update this every session. Single source of truth for "where are we."_
 - [~] Phase 7 — Hardening + DSE
   - [x] **sky130 area DSE** (real, yosys+PDK): core 93% util @N4/MC8; Pareto in pnr/dse_report.md
   - [ ] Fmax (OpenSTA) · placement util + **GDS** (OpenROAD/LibreLane) — **CI/later (not in-env)**
-  - [ ] freeze PREDICTIONS.md at operator-selected tapeout point (area preliminary recorded)
+  - [x] **PREDICTIONS.md FROZEN** at the operator-selected point (N4/MC4/ACC24, 6×2); area gate
+    re-derived + enforced by `make predict` (65% util); Fmax/placement pre-registered as CI-graded targets
 - [x] **INTEGRATION.md** written (host tiling protocol centerpiece)
 - [~] Phase 8 — Release
   - [x] **DATASHEET.md** (arch/arithmetic/perf/area/verification consolidated)

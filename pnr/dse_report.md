@@ -50,3 +50,8 @@ At a 6×2 die MC4 dominates MC2 (more batch, still ≤70%), so the choice is ess
 (smaller die, M≤4 per descriptor) vs MC8 @ 8×2 (largest die, full M≤8). MNIST (M=1) is unaffected
 by MAX_COLS either way. Areas are pre-place std-cell sums; placement util (OpenROAD) + Fmax
 (OpenSTA) remain CI/later.
+
+## FROZEN tapeout point (2026-06-07)
+**ARRAY_N=4, MAX_COLS=4, ACC_W=24, 6×2 tiles** (operator-selected). Full-chip ~124–126k µm² →
+**~65% util** of the 6×2 die (192,000 µm²), ≤70% ✓. `make predict` re-derives + gates this. The
+shipping RTL default is now MAX_COLS=4, so the hardened netlist == the verified config.

@@ -1,30 +1,30 @@
 # PREDICTIONS — TensorTile (pre-registered, frozen at tapeout)
 
-> **Status: NOT YET FROZEN.** Populated in Phase 7 *before* the official GDS run, then frozen.
-> After freezing, this file is **never edited** — corrections go in a dated addendum at the
-> bottom. Purpose: honest, pre-registered silicon predictions to compare against measured
-> results, so the project grades itself instead of rationalizing after the fact.
+> **Status: FROZEN 2026-06-07** at the operator-selected tapeout point: **ARRAY_N=4, MAX_COLS=4,
+> ACC_W=24, 6×2 TT tiles**. Area/util/throughput are pre-registered from real sky130 synthesis;
+> routed Fmax + placement util are pre-registered as **targets**, to be graded against OpenSTA/
+> OpenROAD in CI. After this freeze the table is **never edited** — corrections go to the dated
+> addendum. Purpose: honest pre-registration so the project grades itself, not rationalizes after.
 
-To be recorded before tapeout (Phase 7), at the operator-selected design point:
-- **OpenSTA Fmax** at the tt corner (and the closed target frequency).
-- **Area per block** (PE, array, accumulators, requant, FIFOs, CSR, control) in cells + um².
-- **Peak MAC utilization** (theoretical, back-to-back tiles).
-- **Demo-workload MAC utilization** (measured on the streamed MNIST MLP).
-- **Headline throughput** = MACs/cycle × closed frequency.
+## Frozen tapeout point — ARRAY_N=4, MAX_COLS=4, ACC_W=24, 6×2 tiles
 
-**Preliminary (NOT frozen — Fmax/PnR pending OpenSTA+OpenROAD in CI):**
+| metric | pre-registered value | grade source | basis |
+|--------|----------------------|--------------|-------|
+| Full-chip area | **~124,300–125,900 µm²** (~15.0k sky130 cells; ±1% abc-run variance) | OpenROAD GDS | yosys + sky130_fd_sc_hd tt (full top; `make predict`) |
+| — core (PE×16 + ACC@MC4 + requant + FSM) | ~101,200 µm² (~80%) | — | DSE row N4/MC4 (pnr/dse_report.md) |
+| — wrapper (SPI host + 2 FIFOs + descriptor queue + CSR) | ~23,100 µm² (~20%) | — | full-chip − core |
+| Synthesis utilization (full chip) | **64.8–65.6%** of 6×2 die (192,000 µm²) | OpenROAD placement | ≤70% target met (`make predict` re-derives + gates) |
+| Dominant area | 16 INT8 multipliers (irreducible) + ACC buffer (256 ff @ MC4) | — | DSE read-out |
+| Peak compute | **16 MAC/cycle** (ARRAY_N²) | — | weight-stationary array, 1 col/cycle |
+| **Routed Fmax (tt corner)** | **≥ 50 MHz** (target; WNS ≥ 0) | **OpenSTA (CI)** | _pre-registered target — grade in CI_ |
+| Peak throughput @ 50 MHz | **0.8 GMAC/s** | OpenSTA-closed freq | 16 MAC/cycle × 50 MHz |
+| Demo-workload accuracy (silicon) | **96.00%** (100-img), 96.67% (full) | already measured | RTL bit-exact vs NumPy model |
+| Demo-workload MAC utilization | pre-registered _pending perf-counter dump on routed clk_ | perf counters | `perf_mac / (perf_busy·16)` |
 
-| metric | preliminary value | basis |
-|--------|-------------------|-------|
-| Core area @ ARRAY_N=4, MAX_COLS=8 | 119,231 µm² (~14–16k sky130 cells) | yosys + sky130_fd_sc_hd tt (make sweep) |
-| Core area @ ARRAY_N=4, MAX_COLS=2 | 93,352 µm² (~13.9k cells) | DSE point (pnr/dse_report.md) |
-| Synthesis utilization (core, MC=8) | ~93% of 4×2 die | over ≤70% target → fallback needed |
-| Peak compute | ARRAY_N² = 16 MAC/cycle | weight-stationary array |
-| Peak throughput @ 50 MHz target | 0.8 GMAC/s | 16 MAC/cycle × 50 MHz |
-| Demo-workload accuracy (silicon) | 96.00% (100-img MNIST), 96.67% (full) | RTL bit-exact vs model |
-| **Fmax (OpenSTA), demo MAC util, closed throughput** | _pending_ | needs OpenSTA/OpenROAD (CI) |
-
-These freeze (with Fmax) at the operator-selected tapeout point in Phase 7.
+**Pre-registration call:** routed Fmax meets the 50 MHz target with WNS ≥ 0 at the tt corner, and
+placement util stays ≤70% on the 6×2 die. These two are graded against OpenSTA/OpenROAD in CI; the
+GDS itself is produced by the TT gds action. The verified RTL config (lint/1M-MAC/formal/MNIST) is
+exactly this tapeout point (MAX_COLS=4) — see METRICS row dated 2026-06-07.
 
 ---
 

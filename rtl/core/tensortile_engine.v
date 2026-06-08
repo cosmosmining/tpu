@@ -15,7 +15,7 @@ module tensortile_engine #(
     parameter integer DATA_W   = 8,
     parameter integer ACC_W    = 24,
     parameter integer BIAS_W   = 16,
-    parameter integer MAX_COLS = 8,
+    parameter integer MAX_COLS = 4,  // tapeout point (MC4 @ 6x2, DSE)
     parameter integer QDEPTH   = 4
 ) (
     input  wire                              clk,

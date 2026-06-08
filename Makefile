@@ -77,8 +77,8 @@ harden: ## [Phase 7] LibreLane/ORFS single-point hardening
 sweep: ## sky130 area DSE across ARRAY_N x MAX_COLS x ACC_W -> pnr/dse_report.md
 	@bash pnr/sweep_sky130.sh
 
-predict: ## [Phase 7] freeze PREDICTIONS.md from STA/area
-	@echo ">> predict -- Phase 7 (freeze PREDICTIONS.md). Placeholder; see DECISIONS.md."
+predict: ## [Phase 7] re-derive area at the frozen tapeout point + enforce <=70% util gate
+	@bash pnr/predict_check.sh
 
 clean: ## remove build artifacts
 	@rm -rf build sim_build obj_dir *.vcd summary.json __pycache__ scripts/__pycache__ \

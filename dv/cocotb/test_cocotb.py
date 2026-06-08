@@ -22,7 +22,7 @@ def _env():
         extra.append(env["PYTHONPATH"])
     env["PYTHONPATH"] = os.pathsep.join(extra)
     env.update(ARRAY_N=str(PARAMS["ARRAY_N"]), DATA_W=str(PARAMS["DATA_W"]),
-               ACC_W=str(PARAMS["ACC_W"]), MAX_COLS="8",
+               ACC_W=str(PARAMS["ACC_W"]), MAX_COLS="4",
                FIFO_WIDTH="8", FIFO_DEPTH="8",
                REGRESS_MACS=env.get("REGRESS_MACS", "1000000"),
                COV_OUT=str(REPO / "dv" / "coverage_phase3.md"))
@@ -56,7 +56,7 @@ def test_fifo():
 
 CORE_SRCS = [CORE / "tt_pe.v", CORE / "tt_mac_array.v", CORE / "tt_requant.v",
              CORE / "tensortile_core.v"]
-CORE_PARAMS = {"ARRAY_N": 4, "DATA_W": 8, "ACC_W": 24, "BIAS_W": 16, "MAX_COLS": 8}
+CORE_PARAMS = {"ARRAY_N": 4, "DATA_W": 8, "ACC_W": 24, "BIAS_W": 16, "MAX_COLS": 4}
 
 
 def test_core():
@@ -89,4 +89,4 @@ TOP_SRCS = CORE_SRCS + [CORE / "tt_fifo.v", CORE / "tensortile_engine.v",
 def test_top():
     _run(TOP_SRCS, "tt_um_tensortile", "tb_top",
          params={"ARRAY_N": 4, "DATA_W": 8, "ACC_W": 24, "BIAS_W": 16,
-                 "MAX_COLS": 8, "QDEPTH": 4})
+                 "MAX_COLS": 4, "QDEPTH": 4})

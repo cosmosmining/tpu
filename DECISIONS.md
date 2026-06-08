@@ -228,3 +228,28 @@ inactive bank during streaming, swap at the tile boundary). Findings:
 queue. Ping-pong is the documented next step **only if** the weight-load path is changed to
 multi-cycle (shift-chain), at which point the latency it hides becomes real and the area trade is
 re-evaluated against the chosen DSE point. The dual-bank work is recoverable from git history.
+
+## 2026-06-07 — Phase 7 tapeout point FROZEN
+
+**[area/params] Tapeout point = ARRAY_N=4, MAX_COLS=4, ACC_W=24, 6×2 TT tiles (operator-selected).**
+The core-only DSE was misleading for the area gate; I synthesized the **full chip**
+(`tt_um_tensortile`: SPI host + CSR/bridge + 4-deep descriptor queue + I/O FIFOs + core) on real
+sky130 (`sky130_fd_sc_hd` tt): 142,669 µm² (MC8) / 125,857 (MC4) / 117,898 (MC2). Key finding: the
+full chip does **not** fit a 4×2 TT die at ≤70% util in any config (even MC2 = 92% of 4×2) — the
+wrapper adds ~23–25k µm². Gate-meeting points: MC4@6×2 (66%), MC2@6×2 (61%), MC8@8×2 (56%). At a 6×2
+die MC4 dominates MC2 (more batch, still ≤70%); MC8 needs the larger/costlier 8×2. This touches
+area>70% + a parameter (stop-and-ask per the working agreement; DSE says "operator picks"), so I
+surfaced exactly one focused question with these grounded options. **Operator chose MC4 @ 6×2.**
+
+Actions on the decision:
+- Set `MAX_COLS` default = 4 across `tensortile_core`/`tensortile_engine`/`tt_um_tensortile` so the
+  **hardened netlist = the verified config** (no param override needed in the TT GDS flow).
+- Re-verified the *exact shipping config* at MC4: lint clean · 7/7 cocotb benches · FIFO+core formal
+  proven (k-induction) · MNIST 100/100 bit-exact · 1M-MAC regression (5546 descriptors, 1,000,288
+  MACs, 0 mismatches, 26/26 functional bins). Two directed benches hard-coded M=5/M=6 (> MC4) →
+  made `MAX_COLS`-aware (`min(5,MAX_COLS)` etc.); a bench-robustness fix, not a gate change.
+- `make predict` re-implemented: synthesizes the full chip at the frozen point, recomputes util vs
+  the 6×2 die (192,000 µm²), and **enforces the ≤70% gate** (re-derives 64.8%). Area is ±1% across
+  abc runs (recorded as a range). Fmax (OpenSTA) + placement util (OpenROAD) are pre-registered in
+  PREDICTIONS.md as **targets graded in CI** — they are genuinely not derivable in this environment.
+- `info.yaml` tiles → 6×2; **PREDICTIONS.md FROZEN** 2026-06-07.
