@@ -2,9 +2,9 @@
 
 _Update this every session. Single source of truth for "where are we."_
 
-- **Current phase:** Phase 7 — **tapeout point FROZEN**: ARRAY_N=4, **MAX_COLS=4**, ACC_W=24,
-  **6×2** tiles (full-chip 65% util ≤70%). Whole shipping config re-verified at MC4; PREDICTIONS.md
-  frozen. Remaining = CI signoff (Fmax/GDS/ATPG) + v1.0.0 tag.
+- **Current phase:** Phase 7 — tapeout point FROZEN (N4/MC4/ACC24, 6×2, 65% util). PREDICTIONS.md
+  frozen. **Official TTSKY26c GDS signoff wired + dispatched** (tt-gds-action@ttsky26c, sky130A) to
+  grade area/util/Fmax. Remaining = read GDS/STA result, then precheck/gl_test/viewer + LICENSE + v1.0.0 tag.
 - **Branch:** `claude/inspiring-allen-bw0cx`
 - **Last updated:** 2026-06-07
 - **Target shuttle:** Tiny Tapeout TTSKY26c (sky130A), submission deadline 2026-09-07
