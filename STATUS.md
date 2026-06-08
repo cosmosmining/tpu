@@ -48,7 +48,8 @@ _Update this every session. Single source of truth for "where are we."_
   - [x] closure re-met: fast benches + 1M regression + formal all green with the changes
   - [x] **4-deep descriptor command queue** (`tensortile_engine`, reuses proven `tt_fifo`):
     enqueue/occupancy/full + back-to-back execution, all results bit-exact (`tb_engine`)
-  - [ ] ping-pong weight double-buffer (remaining P1 RTL)
+  - [x] ping-pong: **evaluated, intentionally not shipped** — no benefit with single-cycle weight
+    load + area-negative (DECISIONS/ERRATA E6); dual-bank path verified, overlap reverted unverified
 - [ ] Phase 6 — DFT (scan + ATPG ≥95%) — **Fault tool unavailable in-env → CI/later**
 - [~] Phase 7 — Hardening + DSE
   - [x] **sky130 area DSE** (real, yosys+PDK): core 93% util @N4/MC8; Pareto in pnr/dse_report.md

@@ -208,3 +208,23 @@ This is honest deferral, not a silent skip — the area DSE above is the real, i
 **[status] Phases done in-env: 0–5 fully + Phase 7 area-DSE. Remaining: Phase 5 ping-pong/descq
 (pure RTL), Phase 6 ATPG (Fault/CI), Phase 7 Fmax+GDS (OpenSTA/OpenROAD/CI), Phase 8 release docs +
 RP2040 fw.** No quality gate was lowered or faked; tool-blocked items are explicitly CI-deferred.
+
+## 2026-06-07 — Phase 5 ping-pong: evaluated, intentionally NOT shipped
+
+**[arch] Ping-pong weight double-buffer evaluated and reverted (engineering call).** I implemented
+the full dual-bank array (`PINGPONG` param) + an overlapped core FSM (load next K-tile into the
+inactive bank during streaming, swap at the tile boundary). Findings:
+1. **No benefit for this microarchitecture.** The core's weight load is a **single-cycle parallel**
+   load (`w_load`+`w_flat`), so the inter-K-tile "bubble" ping-pong hides is ~1 cycle — negligible.
+   Ping-pong pays off only when weight load is *multi-cycle* (e.g., a serial shift-chain). It isn't
+   here.
+2. **Area-negative.** A second N×N weight bank (+128 ff + muxing) *increases* area, and the sky130
+   DSE already puts the core over the ≤70% util target (ERRATA E1). Wrong direction.
+3. The dual-bank + clean swap path was verified bit-exact (tb_core with PINGPONG=1, S_WAITW load),
+   but the *load-during-stream overlap* path had a residual mismatch I did not fully root-cause; per
+   the immutable quality bar (ship only verified, bit-exact RTL) I reverted rather than ship it.
+
+**Conclusion:** the verified design keeps the single-bank array + the (already-shipped) descriptor
+queue. Ping-pong is the documented next step **only if** the weight-load path is changed to
+multi-cycle (shift-chain), at which point the latency it hides becomes real and the area trade is
+re-evaluated against the chosen DSE point. The dual-bank work is recoverable from git history.
