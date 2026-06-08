@@ -2,11 +2,13 @@
 
 _Update this every session. Single source of truth for "where are we."_
 
-- **Current phase:** Phase 7 — tapeout point FROZEN (N4/MC4/ACC24, 6×2, 65% util). PREDICTIONS.md
-  frozen. **Official TTSKY26c GDS signoff wired** (tt-gds-action@ttsky26c, sky130A); TT-project
-  prerequisites complete (info.yaml v6 + per-pin schema, `src/` symlinks, `docs/info.md`,
-  `src/config.json` clk=50MHz). Hardening run dispatched to grade area/util/Fmax. Remaining = read
-  GDS/STA result, then precheck/gl_test/viewer + LICENSE + v1.0.0 tag.
+- **Current phase:** Phase 7 — tapeout point FROZEN (N4/MC4/ACC24, 6×2). **Official TTSKY26c GDS
+  signoff wired + iterating** (tt-gds-action@ttsky26c). Cleared 3 gates: pinout schema, `src/config.json`,
+  and a real RTL fix (`tensortile_core` shared loop var → 32 OpenLane synth-check errors → fixed,
+  re-verified bit-exact). **Run #4 (38e54c9) now in OpenLane P&R.** ⚠️ Watch: OpenLane synth area
+  = **165k µm²** (vs yosys-predicted 124k) ⇒ 6×2 util likely ~85% (> the 70% gate) — run #4 will
+  show if it places/routes; 8×2 is the fallback (DSE: ~49%). Remaining = grade result, precheck/
+  gl_test/viewer + LICENSE + v1.0.0 tag.
 - **Branch:** `claude/inspiring-allen-bw0cx` — NB: container re-clones from origin between sessions;
   `git pull` before working (a stale local base caused a rebase recovery this session).
 - **Last updated:** 2026-06-08
