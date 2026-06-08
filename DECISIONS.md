@@ -253,3 +253,20 @@ Actions on the decision:
   abc runs (recorded as a range). Fmax (OpenSTA) + placement util (OpenROAD) are pre-registered in
   PREDICTIONS.md as **targets graded in CI** — they are genuinely not derivable in this environment.
 - `info.yaml` tiles → 6×2; **PREDICTIONS.md FROZEN** 2026-06-07.
+
+## 2026-06-07 — Wire the real TTSKY26c GDS signoff (grades PREDICTIONS)
+
+**[ci] `gds.yml` placeholder → official `TinyTapeout/tt-gds-action@ttsky26c` (pdk sky130A).**
+At the frozen tapeout point this is now a valid TT project, so the hardening run can produce real
+GDS + OpenLane area/util/STA reports that grade PREDICTIONS.md. Kept the dispatch + `v*`-tag trigger
+(not every push): OpenLane is ~30 min/run; we harden at the frozen point and on release tags only.
+
+**[layout] Sources exposed under `./src` as symlinks to the canonical `rtl/` tree.** TT resolves
+`source_files` under `src/`; symlinking keeps `rtl/` the single source of truth (no copies/drift)
+while satisfying the flow. info.yaml gained `yaml_version: 6` and a real `author` placeholder
+(`passsp345` — owner to replace with their submission credit). Added `docs/info.md` datasheet.
+
+**Deferred to the next iteration (not blockers for grading predictions via the `gds` job):**
+`precheck` (needs a `LICENSE` — TT defaults to Apache-2.0; owner to confirm), `gl_test` (needs a
+gate-level `test/` harness ported from dv/cocotb/tb_top.py), and `viewer` (needs GitHub Pages). The
+`v1.0.0` tag follows a green `gds` run + these submission gates.

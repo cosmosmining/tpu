@@ -1,23 +1,24 @@
 # Tiny Tapeout project metadata (TTSKY26c, sky130A).
-# Source list + pinout reflect the real top (SPI -> CSR/bridge -> descriptor queue + core).
-# Tile count may shrink to fit ≤70% util at the operator-selected DSE point (pnr/dse_report.md).
+# Sources live in ./src (symlinks to the canonical rtl/ tree — single source of truth).
+# Frozen tapeout point: ARRAY_N=4, MAX_COLS=4, ACC_W=24, 6x2 tiles (~66% util). See PREDICTIONS.md.
+yaml_version: 6
 project:
   title: "TensorTile"
-  author: "TBD"
+  author: "passsp345"         # TODO: set your real name/handle for submission credit
   description: "Weight-stationary INT8 systolic GEMM accelerator with on-chip requantization"
   language: "Verilog"
   clock_hz: 50000000          # 50 MHz target
   tiles: "6x2"                # ~960 x 200 um; FROZEN tapeout point: full-chip MC4 = 66% util (≤70%, DSE)
   top_module: "tt_um_tensortile"
-  source_files:
-    - rtl/core/tt_pe.v
-    - rtl/core/tt_mac_array.v
-    - rtl/core/tt_requant.v
-    - rtl/core/tt_fifo.v
-    - rtl/core/tensortile_core.v
-    - rtl/core/tensortile_engine.v
-    - rtl/tt_top/tt_spi_host.v
-    - rtl/tt_top/tt_um_tensortile.v
+  source_files:               # resolved under ./src (see symlinks)
+    - tt_pe.v
+    - tt_mac_array.v
+    - tt_requant.v
+    - tt_fifo.v
+    - tensortile_core.v
+    - tensortile_engine.v
+    - tt_spi_host.v
+    - tt_um_tensortile.v
 
 # Pinout (SPEC §8). Normal mode; scan muxes under the test_en CSR bit (Phase 6).
 pinout:

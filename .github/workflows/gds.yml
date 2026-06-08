@@ -1,11 +1,11 @@
 name: gds
-# Tiny Tapeout signoff GDS via the official TT GitHub Action.
+# Tiny Tapeout signoff GDS via the official TT action (TTSKY26c shuttle, sky130A).
 #
-# Gated to manual dispatch + version tags ONLY (NOT push/PR): the official action needs a
-# complete, valid TT project (frozen info.yaml pins, hardened sources), which does not exist
-# until Phase 7. Running it on every push during Phases 0-6 would redden `main` for no reason.
-# In Phase 7 the placeholder step below is replaced with the official reusable workflow
-# (TinyTapeout/tt-gds-action @ the TTSKY26c ref). See DECISIONS.md (2026-06-07).
+# Dispatch + version-tag only (NOT every push): the OpenLane hardening run is ~30 min, so we run
+# it at the frozen tapeout point (manual dispatch) and on v* release tags — not on every dev
+# commit. This produces the GDS plus the OpenLane area / utilization / STA timing reports that
+# grade PREDICTIONS.md. precheck / gl_test / viewer are added once a LICENSE and the gate-level
+# test/ harness are in place. See DECISIONS.md (2026-06-07).
 on:
   workflow_dispatch:
   push:
@@ -13,10 +13,11 @@ on:
 
 jobs:
   gds:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: GDS (wired in Phase 7)
-        run: |
-          echo "Tiny Tapeout GDS signoff is wired in Phase 7."
-          echo "Phase 7 replaces this step with the official TT GDS action and a frozen info.yaml."
+        with:
+          submodules: recursive
+      - uses: TinyTapeout/tt-gds-action@ttsky26c
+        with:
+          pdk: sky130A
