@@ -270,3 +270,9 @@ while satisfying the flow. info.yaml gained `yaml_version: 6` and a real `author
 `precheck` (needs a `LICENSE` — TT defaults to Apache-2.0; owner to confirm), `gl_test` (needs a
 gate-level `test/` harness ported from dv/cocotb/tb_top.py), and `viewer` (needs GitHub Pages). The
 `v1.0.0` tag follows a green `gds` run + these submission gates.
+
+**GDS run #1→#2 (pinout schema gotcha):** TTSKY26c `info.yaml` pinout needs **per-pin keys**
+`ui[0]..uio[7]` (24 keys), NOT list form `ui: [...]`. tt_tool rejected lists ("Invalid keys
+[ui,uo,uio]; Missing ui[0]…"). Fixed in 446d1db. The `src/`-relative `source_files` + symlink layout
+was accepted first try (no source error) — layout choice confirmed. Run #2 cleared validation and is
+hardening in OpenLane (~30 min); read GDS/STA artifacts to grade PREDICTIONS area/util/Fmax.
