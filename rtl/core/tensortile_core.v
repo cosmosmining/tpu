@@ -63,7 +63,8 @@ module tensortile_core #(
 
     reg signed [ACC_W-1:0]  acc_buf [0:ARRAY_N-1][0:MAX_COLS-1];
     reg signed [BIAS_W-1:0] bias_rf [0:ARRAY_N-1];
-    integer ic;
+    integer ic;   // main-FSM K-accumulate loop
+    integer ib;   // bias-load loop — separate var so the two always-blocks don't share a driver
 
     // ---- array instance --------------------------------------------------------------------
     wire                     arr_en     = (state == S_STREAM);
@@ -95,9 +96,9 @@ module tensortile_core #(
     // ---- bias load -------------------------------------------------------------------------
     always @(posedge clk) begin
         if (!rst_n) begin
-            for (ic = 0; ic < ARRAY_N; ic = ic + 1) bias_rf[ic] <= {BIAS_W{1'b0}};
+            for (ib = 0; ib < ARRAY_N; ib = ib + 1) bias_rf[ib] <= {BIAS_W{1'b0}};
         end else if (b_load) begin
-            for (ic = 0; ic < ARRAY_N; ic = ic + 1) bias_rf[ic] <= b_flat[ic*BIAS_W +: BIAS_W];
+            for (ib = 0; ib < ARRAY_N; ib = ib + 1) bias_rf[ib] <= b_flat[ib*BIAS_W +: BIAS_W];
         end
     end
 

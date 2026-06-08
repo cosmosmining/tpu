@@ -276,3 +276,11 @@ gate-level `test/` harness ported from dv/cocotb/tb_top.py), and `viewer` (needs
 [ui,uo,uio]; Missing ui[0]…"). Fixed in 446d1db. The `src/`-relative `source_files` + symlink layout
 was accepted first try (no source error) — layout choice confirmed. Run #2 cleared validation and is
 hardening in OpenLane (~30 min); read GDS/STA artifacts to grade PREDICTIONS area/util/Fmax.
+
+**GDS run #3 (synth-check fix):** OpenLane hardened past lint + synthesis, then `Checker.YosysSynthChecks`
+failed with "32 Yosys check errors". Root cause: `tensortile_core` shared one `integer ic` loop var
+between TWO always-blocks (bias-load + main FSM) → yosys saw all 32 bits of `ic` as multiply-driven
+(32 = the 32-bit integer width). Real RTL smell, correctly rejected. Fix: gave the bias-load block its
+own `integer ib`. Pure refactor — re-verified bit-exact: lint clean, 7/7 benches, 1,000,288 MACs / 0
+mismatches, FIFO+core formal still PROVEN, and `yosys check` multidriver count 32→0. Local `make synth`
+(yosys 0.33) never flagged it; OpenLane's newer yosys `check` does — added to the lint discipline.
