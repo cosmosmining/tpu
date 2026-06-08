@@ -30,3 +30,23 @@ For 4×2 at ≤70% util including the wrapper, **ARRAY_N=4, MAX_COLS=2** (core 7
 ACC_W=20 (with a re-derived §2.3 overflow bound) is the leading candidate; alternatively request a
 larger tile (e.g. 6×2). Peak throughput = ARRAY_N²·f = 16 MAC/cycle × 50 MHz = **0.8 GMAC/s** at
 the target clock (closed Fmax pending OpenSTA). The operator selects the point; do not auto-decide.
+
+## Full-chip area (tt_um_tensortile, measured — supersedes core-only for the tapeout point)
+
+Real sky130 (`sky130_fd_sc_hd` tt) yosys synthesis of the **whole chip** (SPI host + CSR/bridge +
+4-deep descriptor queue + I/O FIFOs + core), default ARRAY_N=4/DATA_W=8/ACC_W=24. The wrapper adds
+~23.4k µm² over the core. Util vs TT die: 4×2=128,000 / 6×2=192,000 / 8×2=256,000 µm²; target ≤70%.
+
+| MAX_COLS | full-chip cells | area µm² | 4×2 util | 6×2 util | 8×2 util |
+|---------:|----------------:|--------:|---------:|---------:|---------:|
+| 8 | ~16,900 | 142,669 | 111% ✗ | 74% ✗ | **56% ✓** |
+| 4 | ~15,000 | 125,857 |  98% ✗ | **66% ✓** | 49% ✓ |
+| 2 | ~14,100 | 117,898 |  92% ✗ | **61% ✓** | 46% ✓ |
+
+**Read it straight:** the full chip does **not** fit a 4×2 TT die at ≤70% util in any config — the
+SPI/CSR/FIFO/queue wrapper pushes even MC=2 to 92% of 4×2. Meeting ≤70% needs a larger die. The
+gate-meeting tapeout points are: **MC4 @ 6×2 (66%)**, **MC2 @ 6×2 (61%)**, or **MC8 @ 8×2 (56%)**.
+At a 6×2 die MC4 dominates MC2 (more batch, still ≤70%), so the choice is essentially MC4 @ 6×2
+(smaller die, M≤4 per descriptor) vs MC8 @ 8×2 (largest die, full M≤8). MNIST (M=1) is unaffected
+by MAX_COLS either way. Areas are pre-place std-cell sums; placement util (OpenROAD) + Fmax
+(OpenSTA) remain CI/later.
