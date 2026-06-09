@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# Phase 7 `make predict`: re-derive full-chip sky130 area at the FROZEN tapeout point
-# (ARRAY_N=4, MAX_COLS=4, ACC_W=24, 6x2 tiles) and enforce the <=70% util gate that
-# PREDICTIONS.md pre-registers. Fmax/placement util are graded separately in CI (OpenSTA/OpenROAD).
+# Phase 7 `make predict`: re-derive full-chip sky130 area at the tapeout point
+# (ARRAY_N=4, MAX_COLS=4, ACC_W=24, 8x2 tiles) and enforce the <=70% util gate that
+# PREDICTIONS.md pre-registers. NB: yosys-abc area here runs ~30% below OpenLane synth (see
+# PREDICTIONS addendum 2026-06-08); Fmax/placement are graded in CI (OpenSTA/OpenROAD).
 set -uo pipefail
-DIE_UM2=${DIE_UM2:-192000}     # 6x2 TT tiles (~960x200 um)
+DIE_UM2=${DIE_UM2:-256000}     # 8x2 TT tiles (~1280x200 um)
 UTIL_TGT=70
 SRC="rtl/core/tt_pe.v rtl/core/tt_mac_array.v rtl/core/tt_requant.v rtl/core/tt_fifo.v \
      rtl/core/tensortile_core.v rtl/core/tensortile_engine.v rtl/tt_top/tt_spi_host.v \

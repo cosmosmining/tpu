@@ -8,7 +8,8 @@ project:
   description: "Weight-stationary INT8 systolic GEMM accelerator with on-chip requantization"
   language: "Verilog"
   clock_hz: 50000000          # 50 MHz target
-  tiles: "6x2"                # ~960 x 200 um; FROZEN tapeout point: full-chip MC4 = 66% util (≤70%, DSE)
+  tiles: "8x2"                # ~1280 x 200 um; tapeout die (8x2). OpenLane synth ~165k um2 => ~65% util
+                              # (6x2 was 86% util -> routing-congested fail in GDS run #4; see PREDICTIONS addendum)
   top_module: "tt_um_tensortile"
   source_files:               # resolved under ./src (see symlinks)
     - tt_pe.v
