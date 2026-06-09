@@ -2,13 +2,13 @@
 
 _Update this every session. Single source of truth for "where are we."_
 
-- **Current phase:** Phase 7 — tapeout point FROZEN (N4/MC4/ACC24, 6×2). **Official TTSKY26c GDS
-  signoff wired + iterating** (tt-gds-action@ttsky26c). Cleared 3 gates: pinout schema, `src/config.json`,
-  and a real RTL fix (`tensortile_core` shared loop var → 32 OpenLane synth-check errors → fixed,
-  re-verified bit-exact). **Run #4 (38e54c9) now in OpenLane P&R.** ⚠️ Watch: OpenLane synth area
-  = **165k µm²** (vs yosys-predicted 124k) ⇒ 6×2 util likely ~85% (> the 70% gate) — run #4 will
-  show if it places/routes; 8×2 is the fallback (DSE: ~49%). Remaining = grade result, precheck/
-  gl_test/viewer + LICENSE + v1.0.0 tag.
+- **Current phase:** Phase 7 — tapeout point **N4/MC4/ACC24, 8×2**. **Official TTSKY26c GDS signoff
+  wired + iterating** (tt-gds-action@ttsky26c). Cleared 4 gates: pinout schema, `src/config.json`,
+  an RTL synth-check fix (shared loop var → 32 errors), and the **die size**: GDS run #4 hardened
+  through synth (OpenLane area **165k µm²**, ~33% > yosys-abc) but **6×2 = ~86% util → P&R failed on
+  congestion after 15 min** → grew die to **8×2** (256k ⇒ 64.6% util, ≤70% ✓). Design unchanged (MC4),
+  RTL/DV/formal identical. **Run #5 (3fc2f0f, 8×2) hardening now.** Remaining = grade run #5 GDS/STA,
+  then precheck/gl_test/viewer + LICENSE + v1.0.0 tag.
 - **Branch:** `claude/inspiring-allen-bw0cx` — NB: container re-clones from origin between sessions;
   `git pull` before working (a stale local base caused a rebase recovery this session).
 - **Last updated:** 2026-06-08

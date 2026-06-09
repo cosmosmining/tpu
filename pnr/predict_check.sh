@@ -22,7 +22,7 @@ AREA=$(yosys -p "read_verilog -sv $SRC; hierarchy -top tt_um_tensortile;
 if [ -z "$AREA" ]; then echo "predict: synth produced no area -> check tools"; exit 1; fi
 
 UTIL=$(awk -v a="$AREA" -v d="$DIE_UM2" 'BEGIN{printf "%.1f", 100*a/d}')
-printf "predict @ FROZEN point (N4,MC4,ACC24,6x2): area=%.0f um^2  util=%s%% of %s  (target <=%s%%)\n" \
+printf "predict @ tapeout point (N4,MC4,ACC24,8x2): area=%.0f um^2  util=%s%% of %s  (target <=%s%%)\n" \
        "$AREA" "$UTIL" "$DIE_UM2" "$UTIL_TGT"
 PASS=$(awk -v u="$UTIL" -v t="$UTIL_TGT" 'BEGIN{print (u<=t)?"PASS":"FAIL"}')
 echo "predict: area gate $PASS.  Fmax(OpenSTA)+placement util(OpenROAD) graded in CI vs PREDICTIONS.md targets."

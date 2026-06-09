@@ -29,4 +29,17 @@ exactly this tapeout point (MAX_COLS=4) — see METRICS row dated 2026-06-07.
 ---
 
 ### Addenda (post-freeze corrections only — dated)
-_none yet_
+
+**2026-06-08 — Tapeout die corrected 6×2 → 8×2 (the frozen area prediction MISSED, recorded honestly).**
+The frozen table pre-registered full-chip area ≈124–126k µm² (yosys flatten+abc) ⇒ 64.8% util of the
+6×2 die, and predicted it would place & route. Graded against the real flow, **this missed:**
+- LibreLane/OpenLane synthesis (GDS run #4, sky130A, commit 38e54c9) reported
+  **`tt_um_tensortile` = 165,413 µm²** of standard cells — ~33% above the yosys-abc estimate
+  (OpenLane's synth strategy + drive-strength buffering inflate cell area vs my local `abc -liberty`).
+- 165k on the 6×2 die (192,000 µm² gross) ⇒ **~86% util**, over the ≤70% gate. OpenLane ran full
+  placement→routing for ~15 min and **failed on congestion** — 6×2 is infeasible for this design.
+- **Correction:** tapeout die → **8×2** (256,000 µm²) ⇒ **64.6% util** at the real 165k area; ≤70%
+  gate met and comfortable for routing. The design is **unchanged** (ARRAY_N=4, MAX_COLS=4 — only the
+  die grew); all RTL verification (1M-MAC bit-exact, formal) is identical and still valid.
+- Net grade: the *area-in-µm²* number stands as a recorded **under-estimate**; the *fit/util* call is
+  corrected to **8×2 @ 64.6%**. Lesson logged: predict from OpenLane synth, not yosys-abc (~30% low).

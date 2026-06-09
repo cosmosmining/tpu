@@ -55,3 +55,9 @@ by MAX_COLS either way. Areas are pre-place std-cell sums; placement util (OpenR
 **ARRAY_N=4, MAX_COLS=4, ACC_W=24, 6×2 tiles** (operator-selected). Full-chip ~124–126k µm² →
 **~65% util** of the 6×2 die (192,000 µm²), ≤70% ✓. `make predict` re-derives + gates this. The
 shipping RTL default is now MAX_COLS=4, so the hardened netlist == the verified config.
+
+## CORRECTION 2026-06-08 — tapeout die 6×2 → 8×2
+GDS run #4 measured the **real** OpenLane synth area = **165,413 µm²** (the yosys-abc DSE here reads
+~124k, ~30% low). On 6×2 that's ~86% util and routing **failed on congestion** after a full ~15-min P&R.
+Corrected tapeout die = **8×2** (256k µm²) ⇒ ~64.6% util, ≤70% met. The yosys-area DSE columns below
+remain a *relative* guide only; absolute fit is governed by the OpenLane number.

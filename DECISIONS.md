@@ -284,3 +284,14 @@ between TWO always-blocks (bias-load + main FSM) → yosys saw all 32 bits of `i
 own `integer ib`. Pure refactor — re-verified bit-exact: lint clean, 7/7 benches, 1,000,288 MACs / 0
 mismatches, FIFO+core formal still PROVEN, and `yosys check` multidriver count 32→0. Local `make synth`
 (yosys 0.33) never flagged it; OpenLane's newer yosys `check` does — added to the lint discipline.
+
+## 2026-06-08 — Tapeout die 6×2 → 8×2 (GDS run #4 routing-congested)
+
+**[area/parameter] Grew the tapeout die 6×2 → 8×2.** GDS run #4 (the first run to clear all front-end
+gates) hardened through synthesis — LibreLane reported **tt_um_tensortile = 165,413 µm²** of cells,
+~33% above my yosys-abc estimate (124k). On the 6×2 die (192k) that is ~86% util (over the ≤70% gate);
+OpenLane ran full placement→routing ~15 min then failed on **congestion**. 6×2 is infeasible for this
+design. Fix: **8×2** (256k µm²) ⇒ 165k = **64.6% util**, gate met + routable. Design unchanged (still
+MC4 — only the die grew), so RTL/DV/formal are identical and still valid; only info.yaml `tiles` + the
+`make predict` DIE changed. Authorized by operator ("fix it"). PREDICTIONS.md addendum dated 2026-06-08
+records the area-prediction miss honestly. Re-dispatched as GDS run #5 at 8×2.
